@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "jest"
+    "test": "jest",
+    "aggregate:generate": "node scripts/generate-aggregate.js",
+    "docs:generate": "node scripts/generate-openapi.js",
+    "docs:preview": "bump preview openapi.json",
+    "docs:serve": "swagger-ui-serve openapi.json"
   },
   "keywords": [
     "express",
