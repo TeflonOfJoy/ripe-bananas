@@ -27,7 +27,7 @@ build_docs:
 api_diff:
   stage: test
   dependencies:
-    - build
+    - build_docs
   script:
     - npm install -g bump-cli
     - bump diff $OPENAPI_FILE
@@ -38,7 +38,7 @@ api_diff:
 api_validate:
   stage: test
   dependencies:
-    - build
+    - build_docs
   script:
     - npm install -g bump-cli
     - bump deploy --dry-run $OPENAPI_FILE
@@ -50,7 +50,7 @@ api_validate:
 deploy_docs:
   stage: deploy
   dependencies:
-    - build
+    - build_docs
   script:
     - npm install -g bump-cli
     - bump deploy $OPENAPI_FILE
@@ -62,7 +62,7 @@ deploy_docs:
 deploy_preview:
   stage: deploy
   dependencies:
-    - build
+    - build_docs
   script:
     - npm install -g bump-cli
     - bump deploy $OPENAPI_FILE --branch $PREVIEW_NAME
