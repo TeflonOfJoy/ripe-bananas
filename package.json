@@ -12,6 +12,10 @@
     "docs:preview": "bump preview openapi.json",
     "docs:serve": "swagger-ui-serve openapi.json"
   },
+  "engines": {
+    "node": "22.x",
+    "npm": "10.x"
+  },
   "keywords": [
     "express",
     "mongodb",
