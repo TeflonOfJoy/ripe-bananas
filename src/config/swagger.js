@@ -14,7 +14,7 @@ const options = {
       description: 'Express MongoDB API for movie reviews',
       contact: {
         name: 'IUM-TWEB Team',
-        email: 'team@example.com'
+        email: 'ium_tweb@teflonofjoy.dev'
       },
       license: {
         name: 'ISC',
@@ -23,8 +23,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001',
-        description: 'Development server'
+        url: process.env.CORS_ORIGIN,
+        description: process.env.NODE_ENV === 'development' ? 'Development server' : 'Production server'
       }
     ],
     components: {
