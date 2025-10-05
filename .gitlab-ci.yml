@@ -12,11 +12,6 @@ stages:
   - test
   - deploy
 
-cache:
-  paths:
-    - .npm/
-    - node_modules/
-
 build:
   stage: build
   script:
@@ -62,12 +57,12 @@ deploy_docs:
     - echo "OPENAPI_FILE=$OPENAPI_FILE"
     - bump deploy $OPENAPI_FILE
     - echo "API documentation deployed to Bump.sh"
-    - echo "View at https://bump.sh/doc/$BUMP_DOC_ID"
+    - echo "View at https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID"
   rules:
     - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
   environment:
     name: production
-    url: https://bump.sh/doc/$BUMP_DOC_ID
+    url: https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID
 
 deploy_preview:
   stage: deploy
@@ -81,7 +76,7 @@ deploy_preview:
     - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE == "push"
   environment:
     name: preview/$CI_COMMIT_REF_SLUG
-    url: https://bump.sh/doc/$BUMP_DOC_ID/branch/$CI_COMMIT_REF_SLUG
+    url: https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID/branch/$CI_COMMIT_REF_SLUG
     on_stop: cleanup_preview
 
 cleanup_preview:
