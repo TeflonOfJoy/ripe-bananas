@@ -3,7 +3,6 @@
 image: node:22-alpine
 
 variables:
-  npm_config_cache: "$CI_PROJECT_DIR/.npm"
   PUPPETEER_SKIP_DOWNLOAD: "true"
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
 
@@ -12,7 +11,7 @@ stages:
   - test
   - deploy
 
-build:
+build_docs:
   stage: build
   script:
     - node -v && npm -v
@@ -54,15 +53,11 @@ deploy_docs:
     - build
   script:
     - npm install -g bump-cli
-    - echo "OPENAPI_FILE=$OPENAPI_FILE"
     - bump deploy $OPENAPI_FILE
-    - echo "API documentation deployed to Bump.sh"
-    - echo "View at https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID"
   rules:
     - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
   environment:
     name: production
-    url: https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID
 
 deploy_preview:
   stage: deploy
@@ -71,12 +66,10 @@ deploy_preview:
   script:
     - npm install -g bump-cli
     - bump deploy $OPENAPI_FILE --branch $PREVIEW_NAME
-    - echo "Preview deployed as branch $PREVIEW_NAME"
   rules:
     - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE == "push"
   environment:
     name: preview/$CI_COMMIT_REF_SLUG
-    url: https://bump.sh/$BUMP_ORG/$BUMP_DOC_ID/branch/$CI_COMMIT_REF_SLUG
     on_stop: cleanup_preview
 
 cleanup_preview:
@@ -84,7 +77,6 @@ cleanup_preview:
   script:
     - npm install -g bump-cli
     - bump deploy --delete-branch $PREVIEW_NAME
-    - echo "Preview branch '$PREVIEW_NAME' cleaned up"
   rules:
     - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE == "push"
       when: manual
