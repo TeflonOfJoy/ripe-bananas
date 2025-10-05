@@ -35,7 +35,7 @@ api_diff:
   dependencies:
     - build
   script:
-    - npm install -g @bump-sh/cli
+    - npm install -g bump-cli
     - bump diff $OPENAPI_FILE
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -46,7 +46,7 @@ api_validate:
   dependencies:
     - build
   script:
-    - npm install -g @bump-sh/cli
+    - npm install -g bump-cli
     - bump deploy --dry-run $OPENAPI_FILE
   only:
     - branches
@@ -58,7 +58,7 @@ deploy_docs:
   dependencies:
     - build
   script:
-    - npm install -g @bump-sh/cli
+    - npm install -g bump-cli
     - bump deploy $OPENAPI_FILE
     - echo "API documentation deployed to Bump.sh"
     - echo "View at https://bump.sh/doc/$BUMP_DOC_ID"
@@ -73,7 +73,7 @@ deploy_preview:
   dependencies:
     - build
   script:
-    - npm install -g @bump-sh/cli
+    - npm install -g bump-cli
     - PREVIEW_NAME="preview-$CI_COMMIT_REF_SLUG"
     - bump deploy $OPENAPI_FILE --branch $PREVIEW_NAME
     - echo "Preview deployed as branch $PREVIEW_NAME"
@@ -87,7 +87,7 @@ deploy_preview:
 cleanup_preview:
   stage: deploy
   script:
-    - npm install -g @bump-sh/cli
+    - npm install -g bump-cli
     - PREVIEW_NAME="preview-$CI_COMMIT_REF_SLUG"
     - bump deploy --delete-branch $PREVIEW_NAME
     - echo "Preview branch '$PREVIEW_NAME' cleaned up"
