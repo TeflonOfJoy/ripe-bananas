@@ -1,6 +1,6 @@
 # GitLab CI/CD Pipeline for Bump.sh Documentation
 
-image: node:18
+image: node:22
 
 variables:
   OPENAPI_FILE: "openapi.json"
