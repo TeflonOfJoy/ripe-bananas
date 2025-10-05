@@ -1,0 +1,97 @@
+# GitLab CI/CD Pipeline for Bump.sh Documentation
+
+image: node:18
+
+variables:
+  OPENAPI_FILE: "openapi.json"
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+stages:
+  - build
+  - test
+  - deploy
+
+cache:
+  paths:
+    - .npm/
+    - node_modules/
+
+build:
+  stage: build
+  script:
+    - npm ci --cache .npm --prefer-offline
+    - npm run docs:generate
+  artifacts:
+    paths:
+      - openapi.json
+    expire_in: 1 hour
+  only:
+    - branches
+
+api_diff:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - npm install -g @bump-sh/cli
+    - bump diff $OPENAPI_FILE --doc $BUMP_DOC_ID --token $BUMP_TOKEN
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  allow_failure: true
+
+api_validate:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - npm install -g @bump-sh/cli
+    - bump deploy --dry-run $OPENAPI_FILE --doc $BUMP_DOC_ID --token $BUMP_TOKEN
+  only:
+    - branches
+  except:
+    - main
+
+deploy_docs:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - npm install -g @bump-sh/cli
+    - bump deploy $OPENAPI_FILE --doc $BUMP_DOC_ID --token $BUMP_TOKEN
+    - echo "API documentation deployed to Bump.sh"
+    - echo "View at https://bump.sh/doc/$BUMP_DOC_ID"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"
+  environment:
+    name: production
+    url: https://bump.sh/doc/$BUMP_DOC_ID
+
+deploy_preview:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - npm install -g @bump-sh/cli
+    - PREVIEW_NAME="preview-$CI_COMMIT_REF_SLUG"
+    - bump deploy $OPENAPI_FILE --doc $BUMP_DOC_ID --token $BUMP_TOKEN --branch $PREVIEW_NAME
+    - echo "Preview deployed as branch $PREVIEW_NAME"
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE == "push"
+  environment:
+    name: preview/$CI_COMMIT_REF_SLUG
+    url: https://bump.sh/doc/$BUMP_DOC_ID/branch/$CI_COMMIT_REF_SLUG
+    on_stop: cleanup_preview
+
+cleanup_preview:
+  stage: deploy
+  script:
+    - npm install -g @bump-sh/cli
+    - PREVIEW_NAME="preview-$CI_COMMIT_REF_SLUG"
+    - bump deploy --delete-branch $PREVIEW_NAME --doc $BUMP_DOC_ID --token $BUMP_TOKEN
+    - echo "Preview branch '$PREVIEW_NAME' cleaned up"
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_PIPELINE_SOURCE == "push"
+      when: manual
+  environment:
+    name: preview/$CI_COMMIT_REF_SLUG
+    action: stop
