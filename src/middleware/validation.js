@@ -3,7 +3,7 @@
  * Defines validation rules for API endpoints
  */
 
-const { param, query } = require('express-validator');
+const { body, param, query } = require('express-validator');
 
 // Review validation rules
 const reviewValidation = {
@@ -91,6 +91,71 @@ const reviewValidation = {
       .optional()
       .isInt({ min: 1 })
       .withMessage('minReviews must be a positive integer')
+  ],
+
+  createReview: [
+    body('movie_title')
+      .notEmpty()
+      .trim()
+      .isLength({ min: 1, max: 200 })
+      .withMessage('Movie title is required and must be between 1-200 characters'),
+
+    body('critic_name')
+      .notEmpty()
+      .trim()
+      .isLength({ min: 1, max: 100 })
+      .withMessage('Critic name is required and must be between 1-100 characters'),
+
+    body('publisher_name')
+      .notEmpty()
+      .trim()
+      .isLength({ min: 1, max: 100 })
+      .withMessage('Publisher name is required and must be between 1-100 characters'),
+
+    body('review_type')
+      .notEmpty()
+      .isIn(['Fresh', 'Rotten', 'Certified Fresh'])
+      .withMessage('Review type must be Fresh, Rotten, or Certified Fresh'),
+
+    body('review_content')
+      .notEmpty()
+      .trim()
+      .isLength({ min: 10, max: 5000 })
+      .withMessage('Review content is required and must be between 10-5000 characters'),
+
+    body('review_date')
+      .optional()
+      .isISO8601()
+      .withMessage('Review date must be a valid ISO date'),
+
+    body('top_critic')
+      .optional()
+      .isBoolean()
+      .withMessage('Top critic must be a boolean'),
+
+    body('review_score')
+      .optional()
+      .custom((value) => {
+        if (value !== null && value !== undefined) {
+          const numValue = Number(value);
+          if (isNaN(numValue) || numValue < 0 || numValue > 10) {
+            throw new Error('Review score must be a number between 0-10');
+          }
+        }
+        return true;
+      }),
+
+    body('rotten_tomatoes_link')
+      .optional()
+      .trim()
+      .isURL()
+      .withMessage('Rotten Tomatoes link must be a valid URL'),
+
+    body('film_ref')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Film reference must be less than 100 characters')
   ]
 };
 
