@@ -9,29 +9,29 @@ const options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Banana Bread API',
-      version: '1.3.0',
-      description: 'Banana Bread is the express MongoDB API for the ' +
-        'Ripe Bananas site, it provides access to movie reviews and chats'
+      title: 'Movie Reviews API - MongoDB Service',
+      version: '1.0.0',
+      description: 'Express MongoDB API for movie reviews',
+      contact: {
+        name: 'IUM-TWEB Team',
+        email: 'ium_tweb@teflonofjoy.dev'
+      },
+      license: {
+        name: 'ISC',
+        url: 'https://opensource.org/licenses/ISC'
+      }
     },
     servers: [
       {
         url: process.env.CORS_ORIGIN,
-        description: process.env.NODE_ENV === 'development'
-          ? 'Development server'
-          : 'Production server'
+        description: process.env.NODE_ENV === 'development' ? 'Development server' : 'Production server'
       }
     ],
     components: {
       schemas: {
         Review: {
           type: 'object',
-          required: [
-            'movie_title',
-            'review_score',
-            'review_type',
-            'review_content'
-          ],
+          required: ['movie_title', 'critic_name', 'review_type', 'review_content'],
           properties: {
             _id: {
               type: 'string',
@@ -44,8 +44,8 @@ const options = {
               example: 'Inception'
             },
             critic_name: {
-              type: ['string', 'null'],
-              description: 'Name of the critic if applicable',
+              type: 'string',
+              description: 'Name of the reviewer',
               example: 'Roger Ebert'
             },
             top_critic: {
@@ -54,8 +54,8 @@ const options = {
               example: true
             },
             publisher_name: {
-              type: ['string', 'null'],
-              description: 'Name of the publication if applicable',
+              type: 'string',
+              description: 'Name of the publication',
               example: 'Chicago Sun-Times'
             },
             review_type: {
@@ -65,9 +65,9 @@ const options = {
               example: 'Fresh'
             },
             review_score: {
-              type: 'number',
-              description: 'Numeric score from 1.0 to 5.0',
-              example: 2.5
+              type: ['number', 'null'],
+              description: 'Numeric score (0-100) if available',
+              example: 85
             },
             review_date: {
               type: 'string',
@@ -78,14 +78,13 @@ const options = {
             review_content: {
               type: 'string',
               description: 'Full text content of the review',
-              example: 'This film delivers an exceptional cinematic ' +
-                'experience...'
+              example: 'This film delivers an exceptional cinematic experience...'
             },
             rotten_tomatoes_link: {
               type: 'string',
               format: 'uri',
-              description: 'Partial Rotten Tomatoes URL for the review',
-              example: 'm/inception'
+              description: 'Rotten Tomatoes URL for the review',
+              example: 'https://www.rottentomatoes.com/m/inception'
             }
           }
         },
@@ -99,7 +98,7 @@ const options = {
             statistics: {
               type: 'object',
               properties: {
-                bananameter: {
+                tomatometer: {
                   type: 'integer',
                   minimum: 0,
                   maximum: 100,

@@ -12,9 +12,7 @@ const reviewValidation = {
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 200 })
-      .withMessage(
-        'Movie title is required and must be between 1-200 characters'
-      ),
+      .withMessage('Movie title is required and must be between 1-200 characters'),
     
     query('page')
       .optional()
@@ -100,102 +98,30 @@ const reviewValidation = {
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 200 })
-      .withMessage(
-        'Movie title is required and must be between 1-200 characters'
-      ),
+      .withMessage('Movie title is required and must be between 1-200 characters'),
 
     body('critic_name')
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 100 })
-      .withMessage(
-        'Critic name is required and must be between 1-100 characters'
-      ),
+      .withMessage('Critic name is required and must be between 1-100 characters'),
 
     body('publisher_name')
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 100 })
-      .withMessage(
-        'Publisher name is required and must be between 1-100 characters'
-      ),
+      .withMessage('Publisher name is required and must be between 1-100 characters'),
 
     body('review_type')
       .notEmpty()
       .isIn(['Fresh', 'Rotten', 'Certified Fresh'])
-      .withMessage(
-        'Review type must be Fresh, Rotten, or Certified Fresh'
-      ),
+      .withMessage('Review type must be Fresh, Rotten, or Certified Fresh'),
 
     body('review_content')
       .notEmpty()
-      .trim()
-      .isLength({ max: 5000 })
-      .withMessage(
-        'Review content is required and must not exceed 5000 characters'
-      ),
-
-    body('review_date')
-      .optional()
-      .isISO8601()
-      .withMessage('Review date must be a valid ISO date'),
-
-    body('top_critic')
-      .optional()
-      .isBoolean()
-      .withMessage('Top critic must be a boolean'),
-
-    body('review_score')
-      .optional()
-      .isFloat({ min: 1.0, max: 5.0 })
-      .withMessage('Review score must be a double between 1.0 and 5.0'),
-
-    body('rotten_tomatoes_link')
-      .optional()
-      .trim()
-      .matches(/^m\/[\w-]+$/)
-      .withMessage(
-        'Rotten Tomatoes link must be in format "m/title"'
-      )
-  ],
-
-  updateReview: [
-    param('id')
-      .isMongoId()
-      .withMessage('Invalid MongoDB ObjectId'),
-
-    body('movie_title')
-      .optional()
-      .trim()
-      .isLength({ min: 1, max: 200 })
-      .withMessage('Movie title must be between 1-200 characters'),
-
-    body('critic_name')
-      .optional()
-      .trim()
-      .isLength({ min: 1, max: 100 })
-      .withMessage('Critic name must be between 1-100 characters'),
-
-    body('publisher_name')
-      .optional()
-      .trim()
-      .isLength({ min: 1, max: 100 })
-      .withMessage('Publisher name must be between 1-100 characters'),
-
-    body('review_type')
-      .optional()
-      .isIn(['Fresh', 'Rotten', 'Certified Fresh'])
-      .withMessage(
-        'Review type must be Fresh, Rotten, or Certified Fresh'
-      ),
-
-    body('review_content')
-      .optional()
       .trim()
       .isLength({ min: 10, max: 5000 })
-      .withMessage(
-        'Review content must be between 10-5000 characters'
-      ),
+      .withMessage('Review content is required and must be between 10-5000 characters'),
 
     body('review_date')
       .optional()
@@ -209,16 +135,27 @@ const reviewValidation = {
 
     body('review_score')
       .optional()
-      .isFloat({ min: 1.0, max: 5.0 })
-      .withMessage('Review score must be a double between 1.0 and 5.0'),
+      .custom((value) => {
+        if (value !== null && value !== undefined) {
+          const numValue = Number(value);
+          if (isNaN(numValue) || numValue < 0 || numValue > 10) {
+            throw new Error('Review score must be a number between 0-10');
+          }
+        }
+        return true;
+      }),
 
     body('rotten_tomatoes_link')
       .optional()
       .trim()
-      .matches(/^m\/[\w-]+$/)
-      .withMessage(
-        'Rotten Tomatoes link must be in format "m/title"'
-      )
+      .isURL()
+      .withMessage('Rotten Tomatoes link must be a valid URL'),
+
+    body('film_ref')
+      .optional()
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage('Film reference must be less than 100 characters')
   ]
 };
 

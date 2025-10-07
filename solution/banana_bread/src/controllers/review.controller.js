@@ -14,7 +14,7 @@ class ReviewController {
 async getMovieReviews(req, res) {
   try {
     const errors = validationResult(req);
-    if (errors.isEmpty() === false) {
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         errors: errors.array()
@@ -48,22 +48,19 @@ async getMovieReviews(req, res) {
       filter.top_critic = topCritic === 'true';
     }
     
-    if (reviewType !== undefined) {
+    if (reviewType) {
       filter.review_type = reviewType;
     }
     
-    if (publisher !== undefined) {
+    if (publisher) {
       filter.publisher_name = new RegExp(publisher, 'i');
     }
 
     // Build sort query
     const sortQuery = {};
-    let sortField = 'review_date';
-    if (sort === 'date') {
-      sortField = 'review_date';
-    } else if (sort === 'score') {
-      sortField = 'review_score';
-    }
+    const sortField = sort === 'date' ? 'review_date' : 
+                    sort === 'score' ? 'review_score' :
+                    'review_date';
     sortQuery[sortField] = order === 'asc' ? 1 : -1;
 
     // Execute query with pagination
@@ -74,10 +71,7 @@ async getMovieReviews(req, res) {
         .sort(sortQuery)
         .skip(skip)
         .limit(parseInt(limit))
-        .select(
-          'movie_title critic_name top_critic publisher_name ' +
-          'review_type review_score review_date review_content created_at'
-        )
+        .select('movie_title critic_name top_critic publisher_name review_type review_score review_date review_content created_at')
         .lean(),
       Review.countDocuments(filter)
     ]);
@@ -91,9 +85,7 @@ async getMovieReviews(req, res) {
       data: {
         reviews: reviews.map(review => ({
           ...review,
-          review_content: review.review_content
-            ? review.review_content.substring(0, 300) + '...'
-            : ''
+          review_content: review.review_content ? review.review_content.substring(0, 300) + '...' : ''
         })),
         pagination: {
           current_page: parseInt(page),
@@ -129,7 +121,7 @@ async getReviewById(req, res) {
 
     const review = await Review.findById(id).lean();
 
-    if (review === null) {
+    if (!review) {
       return res.status(404).json({
         success: false,
         message: 'Review not found'
@@ -166,7 +158,7 @@ async getMovieReviewStats(req, res) {
       movie_key: new RegExp(`^${escapeRegex(title)}$`, 'i') 
     }).lean();
 
-    if (stats === null) {
+    if (!stats) {
       console.log('No precomputed stats found, calculating on-demand...');
       
       const reviewStats = await Review.aggregate([
@@ -222,7 +214,7 @@ async getMovieReviewStats(req, res) {
       console.log('Found precomputed stats');
     }
 
-    if (stats === null) {
+    if (!stats) {
       return res.status(404).json({
         success: false,
         message: `No reviews found for movie: ${title}`
@@ -234,7 +226,7 @@ async getMovieReviewStats(req, res) {
       data: {
         movie_title: stats.movie_key,
         statistics: {
-          bananameter: stats.bananameter,
+          tomatometer: stats.tomatometer,
           top_critic_score: stats.top_critic_score,
           audience_score: stats.audience_score,
           certified_fresh: stats.certified_fresh,
@@ -263,7 +255,7 @@ async getMovieReviewStats(req, res) {
 async searchReviews(req, res) {
   try {
     const errors = validationResult(req);
-    if (errors.isEmpty() === false) {
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         errors: errors.array()
@@ -281,7 +273,7 @@ async searchReviews(req, res) {
     // Build search filter
     const filter = {};
 
-    if (query !== undefined) {
+    if (query) {
       filter.$or = [
         { review_content: new RegExp(query, 'i') },
         { movie_title: new RegExp(query, 'i') },
@@ -289,11 +281,11 @@ async searchReviews(req, res) {
       ];
     }
 
-    if (title !== undefined) {
+    if (title) {
       filter.movie_title = new RegExp(title, 'i');
     }
 
-    if (criticName !== undefined) {
+    if (criticName) {
       filter.critic_name = new RegExp(criticName, 'i');
     }
 
@@ -304,10 +296,7 @@ async searchReviews(req, res) {
         .sort({ review_date: -1 })
         .skip(skip)
         .limit(parseInt(limit))
-        .select(
-          'movie_title critic_name publisher_name review_type ' +
-          'review_date review_content'
-        )
+        .select('movie_title critic_name publisher_name review_type review_date review_content')
         .lean(),
       Review.countDocuments(filter)
     ]);
@@ -357,7 +346,7 @@ async getTopRated(req, res) {
       data: {
         top_rated_movies: topMovies.map(movie => ({
           movie_key: movie.movie_key,
-          bananameter: movie.bananameter,
+          tomatometer: movie.tomatometer,
           total_reviews: movie.total_reviews,
           certified_fresh: movie.certified_fresh
         }))
@@ -373,10 +362,7 @@ async getTopRated(req, res) {
   }
 }
 
-/**
- * Create a review
- * POST /api/reviews
- */
+/**TBD */
 async createReview(req, res) {
     try {
       const reviewData = {
@@ -401,8 +387,7 @@ async createReview(req, res) {
       console.error('Error creating review:', error);
 
       if (error.name === 'ValidationError') {
-        const validationErrors = Object.values(error.errors)
-          .map(err => err.message);
+        const validationErrors = Object.values(error.errors).map(err => err.message);
         return res.status(400).json({
           success: false,
           message: 'Schema validation failed',
@@ -411,7 +396,7 @@ async createReview(req, res) {
       }
 
       if (error.code === 11000) {
-        return res.status(409).json({
+        return res.status(404).json({
           success: false,
           message: 'A review with these details already exists'
         });
@@ -420,114 +405,6 @@ async createReview(req, res) {
       res.status(500).json({
         success: false,
         message: 'Internal server error while creating review'
-      });
-    }
-  }
-
-/**
- * Update a review
- * PUT /api/reviews/:id
- */
-async updateReview(req, res) {
-    try {
-      const { id } = req.params;
-
-      // Check if review exists
-      const existingReview = await Review.findById(id);
-
-      if (existingReview === null) {
-        return res.status(404).json({
-          success: false,
-          message: 'Review not found'
-        });
-      }
-
-      // Update review with provided fields
-      const updateData = {
-        ...req.body,
-        updated_at: new Date()
-      };
-
-      const updatedReview = await Review.findByIdAndUpdate(
-        id,
-        updateData,
-        { new: true, runValidators: true }
-      );
-
-      res.json({
-        success: true,
-        message: 'Review updated successfully',
-        data: {
-          review: updatedReview.toPublicJSON()
-        }
-      });
-
-    } catch (error) {
-      console.error('Error updating review:', error);
-
-      if (error.name === 'ValidationError') {
-        const validationErrors = Object.values(error.errors)
-          .map(err => err.message);
-        return res.status(400).json({
-          success: false,
-          message: 'Schema validation failed',
-          errors: validationErrors
-        });
-      }
-
-      if (error.name === 'CastError') {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid review ID format'
-        });
-      }
-
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error while updating review'
-      });
-    }
-  }
-
-/**
- * Delete a review
- * DELETE /api/reviews/:id
- */
-async deleteReview(req, res) {
-    try {
-      const { id } = req.params;
-
-      // Check if review exists and delete it
-      const deletedReview = await Review.findByIdAndDelete(id);
-
-      if (deletedReview === null) {
-        return res.status(404).json({
-          success: false,
-          message: 'Review not found'
-        });
-      }
-
-      res.json({
-        success: true,
-        message: 'Review deleted successfully',
-        data: {
-          review: deletedReview.toPublicJSON()
-        }
-      });
-
-    } catch (error) {
-      console.error('Error deleting review:', error);
-
-      if (error.name === 'CastError') {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid review ID format'
-        });
-      }
-
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error while deleting review'
       });
     }
   }

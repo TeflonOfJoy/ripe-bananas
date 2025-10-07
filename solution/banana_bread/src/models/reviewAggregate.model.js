@@ -54,7 +54,7 @@ const reviewAggregateSchema = new mongoose.Schema({
   },
 
   // Computed percentages
-  bananameter: {
+  tomatometer: {
     type: Number,
     default: 0,
     min: 0,
@@ -94,13 +94,46 @@ const reviewAggregateSchema = new mongoose.Schema({
 
 // Index for bulk operations and sorting
 reviewAggregateSchema.index({ last_updated: -1 });
-reviewAggregateSchema.index({ bananameter: -1 });
+reviewAggregateSchema.index({ tomatometer: -1 });
+
+// Pre-save middleware to compute percentages
+reviewAggregateSchema.pre('save', function(next) {
+  // Compute overall tomatometer
+  if (this.total_reviews > 0) {
+    this.tomatometer = Math.round((this.positive_reviews / this.total_reviews) * 100);
+  } else {
+    this.tomatometer = 0;
+  }
+
+  // Compute top critic score
+  if (this.top_critic_total > 0) {
+    this.top_critic_score = Math.round((this.top_critic_positive / this.top_critic_total) * 100);
+  } else {
+    this.top_critic_score = 0;
+  }
+
+  // Compute audience score
+  if (this.audience_total > 0) {
+    this.audience_score = Math.round((this.audience_positive / this.audience_total) * 100);
+  } else {
+    this.audience_score = 0;
+  }
+
+  // Determine certified fresh status
+  this.certified_fresh = this.tomatometer >= 75 && 
+                        this.total_reviews >= 80 && 
+                        this.top_critic_total >= 5;
+
+  this.last_updated = new Date();
+
+  next();
+});
 
 // Instance methods
 reviewAggregateSchema.methods.toPublicJSON = function() {
   return {
     movie_key: this.movie_key,
-    bananameter: this.bananameter,
+    tomatometer: this.tomatometer,
     top_critic_score: this.top_critic_score,
     audience_score: this.audience_score,
     certified_fresh: this.certified_fresh,
@@ -111,13 +144,10 @@ reviewAggregateSchema.methods.toPublicJSON = function() {
 };
 
 // Static methods for aggregate operations
-reviewAggregateSchema.statics.updateMovieStats = async function(
-  movieKey,
-  reviewData
-) {
+reviewAggregateSchema.statics.updateMovieStats = async function(movieKey, reviewData) {
   const existing = await this.findOne({ movie_key: movieKey });
 
-  if (existing !== null) {
+  if (existing) {
     // Update existing aggregate
     existing.total_reviews = reviewData.total_reviews || 0;
     existing.positive_reviews = reviewData.positive_reviews || 0;
@@ -136,14 +166,11 @@ reviewAggregateSchema.statics.updateMovieStats = async function(
   }
 };
 
-reviewAggregateSchema.statics.getTopRated = async function(
-  limit = 20,
-  minReviews = 10
-) {
+reviewAggregateSchema.statics.getTopRated = async function(limit = 20, minReviews = 10) {
   return await this.find({
     total_reviews: { $gte: minReviews }
   })
-  .sort({ bananameter: -1, total_reviews: -1 })
+  .sort({ tomatometer: -1, total_reviews: -1 })
   .limit(limit)
   .lean();
 };
@@ -152,7 +179,7 @@ reviewAggregateSchema.statics.getCertifiedFresh = async function(limit = 20) {
   return await this.find({
     certified_fresh: true
   })
-  .sort({ bananameter: -1, total_reviews: -1 })
+  .sort({ tomatometer: -1, total_reviews: -1 })
   .limit(limit)
   .lean();
 };

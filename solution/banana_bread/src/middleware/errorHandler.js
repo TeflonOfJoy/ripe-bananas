@@ -57,7 +57,7 @@ const sendErrorDev = (err, res) => {
  * Send error response in production (do not leak error details in prod)
  */
 const sendErrorProd = (err, res) => {
-  if (err.isOperational === true) {
+  if (err.isOperational) {
     res.status(err.statusCode).json({
       success: false,
       message: err.message
@@ -88,9 +88,7 @@ const globalErrorHandler = (err, req, res, next) => {
     // Handle specific MongoDB/Mongoose errors
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError') {
-      error = handleValidationErrorDB(error);
-    }
+    if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
   }
@@ -109,10 +107,7 @@ const catchAsync = (fn) => {
  * Handle 404 errors
  */
 const notFound = (req, res, next) => {
-  const err = new AppError(
-    `Can't find ${req.originalUrl} on this server!`,
-    404
-  );
+  const err = new AppError(`Can't find ${req.originalUrl} on this server!`, 404);
   next(err);
 };
 
