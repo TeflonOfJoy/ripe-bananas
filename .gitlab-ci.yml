@@ -23,23 +23,21 @@ build_docs:
       - $OPENAPI_FILE
     expire_in: 1 day
 
-api_diff:
+api_validate:
   stage: test
   dependencies:
     - build_docs
   script:
     - npm install -g bump-cli
-    - bump diff $OPENAPI_FILE --doc $BUMP_DOC_ID
+    - bump deploy --dry-run $OPENAPI_FILE
   allow_failure: true
 
 deploy_docs:
   stage: deploy
   dependencies:
     - build_docs
-  only:
-    - main
   script:
     - npm install -g bump-cli
-    - bump deploy $OPENAPI_FILE --doc $BUMP_DOC_ID
+    - bump deploy $OPENAPI_FILE
   environment:
-    name: production
+    name: $CI_COMMIT_REF_NAME
