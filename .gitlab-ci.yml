@@ -1,6 +1,8 @@
 image: node:22-alpine
 
 variables:
+  CORS_ORIGIN: $CORS_ORIGIN
+  NODE_ENV: $NODE_ENV
   SERVICE_DIR: "solution/$CI_COMMIT_REF_NAME"
   OPENAPI_FILE: "${CI_COMMIT_REF_NAME}_openapi.json"
   PUPPETEER_SKIP_DOWNLOAD: "true"
@@ -30,6 +32,8 @@ api_validate:
   script:
     - npm install -g bump-cli
     - bump deploy --dry-run $OPENAPI_FILE --doc $BUMP_ID --token $BUMP_TOKEN
+  environment:
+    name: $CI_COMMIT_REF_NAME
   allow_failure: true
 
 deploy_docs:
