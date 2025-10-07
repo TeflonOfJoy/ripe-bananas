@@ -5,10 +5,7 @@
 
 const express = require('express');
 const reviewController = require('../controllers/review.controller');
-const {
-  reviewValidation,
-  generalValidation
-} = require('../middleware/validation');
+const { reviewValidation, generalValidation } = require('../middleware/validation');
 
 const router = express.Router();
 
