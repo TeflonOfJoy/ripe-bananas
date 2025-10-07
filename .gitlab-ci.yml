@@ -1,8 +1,8 @@
 image: node:22-alpine
 
 variables:
-  CORS_ORIGIN: $CORS_ORIGIN
-  NODE_ENV: $NODE_ENV
+  CORS_ORIGIN: https://banana-bread-36752c90e972.herokuapp.com/
+  NODE_ENV: production
   SERVICE_DIR: "solution/$CI_COMMIT_REF_NAME"
   OPENAPI_FILE: "${CI_COMMIT_REF_NAME}_openapi.json"
   PUPPETEER_SKIP_DOWNLOAD: "true"

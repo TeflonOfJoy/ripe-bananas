@@ -9,17 +9,9 @@ const options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Movie Reviews API - MongoDB Service',
+      title: 'Ripe Bananas API - Reviews',
       version: '1.0.0',
-      description: 'Express MongoDB API for movie reviews',
-      contact: {
-        name: 'IUM-TWEB Team',
-        email: 'ium_tweb@teflonofjoy.dev'
-      },
-      license: {
-        name: 'ISC',
-        url: 'https://opensource.org/licenses/ISC'
-      }
+      description: 'Banana Bread is the express MongoDB API for the Ripe Bananas site, it provides access to movie reviews and chats'
     },
     servers: [
       {
