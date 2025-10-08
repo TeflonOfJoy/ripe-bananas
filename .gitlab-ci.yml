@@ -11,8 +11,6 @@ stages:
 
 api_validate:
   stage: test
-  dependencies:
-    - build_docs
   script:
     - npm install -g bump-cli
     - bump deploy --dry-run $OPENAPI_FILE --doc $BUMP_ID --token $BUMP_TOKEN
