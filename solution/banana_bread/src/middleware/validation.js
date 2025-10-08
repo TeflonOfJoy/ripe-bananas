@@ -94,30 +94,40 @@ const reviewValidation = {
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 200 })
-      .withMessage('Movie title is required and must be between 1-200 characters'),
+      .withMessage(
+        'Movie title is required and must be between 1-200 characters'
+      ),
 
     body('critic_name')
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 100 })
-      .withMessage('Critic name is required and must be between 1-100 characters'),
+      .withMessage(
+        'Critic name is required and must be between 1-100 characters'
+      ),
 
     body('publisher_name')
       .notEmpty()
       .trim()
       .isLength({ min: 1, max: 100 })
-      .withMessage('Publisher name is required and must be between 1-100 characters'),
+      .withMessage(
+        'Publisher name is required and must be between 1-100 characters'
+      ),
 
     body('review_type')
       .notEmpty()
       .isIn(['Fresh', 'Rotten', 'Certified Fresh'])
-      .withMessage('Review type must be Fresh, Rotten, or Certified Fresh'),
+      .withMessage(
+        'Review type must be Fresh, Rotten, or Certified Fresh'
+      ),
 
     body('review_content')
       .notEmpty()
       .trim()
       .isLength({ min: 10, max: 5000 })
-      .withMessage('Review content is required and must be between 10-5000 characters'),
+      .withMessage(
+        'Review content is required and must be between 10-5000 characters'
+      ),
 
     body('review_date')
       .optional()

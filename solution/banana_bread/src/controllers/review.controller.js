@@ -81,7 +81,9 @@ async getMovieReviews(req, res) {
       data: {
         reviews: reviews.map(review => ({
           ...review,
-          review_content: review.review_content ? review.review_content.substring(0, 300) + '...' : ''
+          review_content: review.review_content
+            ? review.review_content.substring(0, 300) + '...'
+            : ''
         })),
         pagination: {
           current_page: parseInt(page),
@@ -291,7 +293,10 @@ async searchReviews(req, res) {
         .sort({ review_date: -1 })
         .skip(skip)
         .limit(parseInt(limit))
-        .select('movie_title critic_name publisher_name review_type review_date review_content')
+        .select(
+          'movie_title critic_name publisher_name review_type ' +
+          'review_date review_content'
+        )
         .lean(),
       Review.countDocuments(filter)
     ]);
@@ -350,7 +355,8 @@ async createReview(req, res) {
       console.error('Error creating review:', error);
 
       if (error.name === 'ValidationError') {
-        const validationErrors = Object.values(error.errors).map(err => err.message);
+        const validationErrors = Object.values(error.errors)
+          .map(err => err.message);
         return res.status(400).json({
           success: false,
           message: 'Schema validation failed',
