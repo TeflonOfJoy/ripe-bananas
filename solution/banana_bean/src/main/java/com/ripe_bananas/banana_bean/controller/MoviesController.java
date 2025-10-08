@@ -49,9 +49,12 @@ public class MoviesController {
                         max_duration
                 );
 
-        Pageable page_info = PageRequest.of(page_num,
-                page_size,
-                Sort.by(sort_by));
+        Pageable page_info;
+        if(sort_by != null) {
+            page_info = PageRequest.of(page_num, page_size, Sort.by(sort_by));
+        } else {
+            page_info = PageRequest.of(page_num, page_size);
+        }
 
         Page<Movie> movie_page_response = movies_service.findBySpecifiedFilters(
                 moviesSpecifications,
