@@ -221,7 +221,7 @@ async getMovieReviewStats(req, res) {
         movie_id: stats.movie_id,
         movie_title: stats.movie_title,
         statistics: {
-          tomatometer: stats.tomatometer,
+          bananameter: stats.bananameter,
           top_critic_score: stats.top_critic_score,
           audience_score: stats.audience_score,
           certified_fresh: stats.certified_fresh,

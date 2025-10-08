@@ -45,7 +45,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/reviews', reviewRoutes);
+app.use('/reviews', reviewRoutes);
 
 // Socket.IO chat functionality (TBD)
 
