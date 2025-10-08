@@ -33,12 +33,17 @@ class ReviewAggregator {
         this.processedMovies++;
         
         if (this.processedMovies % 10 === 0) {
-          console.log(`Progress: ${this.processedMovies}/${this.totalMovies} movies processed`);
+          console.log(
+            `Progress: ${this.processedMovies}/${this.totalMovies} ` +
+            `movies processed`
+          );
         }
       }
 
       console.timeEnd('Total Aggregation Time');
-      console.log(`Aggregation completed! Processed ${this.processedMovies} movies`);
+      console.log(
+        `Aggregation completed! Processed ${this.processedMovies} movies`
+      );
       
     } catch (error) {
       console.error('Aggregation failed:', error);
@@ -123,7 +128,12 @@ async processMovie(title) {
               { $gt: ['$top_critic_total', 0] },
               { $round: [
                   { $multiply: [
-                      { $divide: ['$top_critic_positive', '$top_critic_total'] },
+                      {
+                        $divide: [
+                          '$top_critic_positive',
+                          '$top_critic_total'
+                        ]
+                      },
                       100
                   ] },
                   0

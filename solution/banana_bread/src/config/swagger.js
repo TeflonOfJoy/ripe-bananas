@@ -9,21 +9,29 @@ const options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Ripe Bananas API - Reviews',
-      version: '1.0.0',
-      description: 'Banana Bread is the express MongoDB API for the Ripe Bananas site, it provides access to movie reviews and chats'
+      title: 'Banana Bread API - Reviews',
+      version: '1.1.0',
+      description: 'Banana Bread is the express MongoDB API for the ' +
+        'Ripe Bananas site, it provides access to movie reviews and chats'
     },
     servers: [
       {
         url: process.env.CORS_ORIGIN,
-        description: process.env.NODE_ENV === 'development' ? 'Development server' : 'Production server'
+        description: process.env.NODE_ENV === 'development'
+          ? 'Development server'
+          : 'Production server'
       }
     ],
     components: {
       schemas: {
         Review: {
           type: 'object',
-          required: ['movie_title', 'critic_name', 'review_type', 'review_content'],
+          required: [
+            'movie_title',
+            'critic_name',
+            'review_type',
+            'review_content'
+          ],
           properties: {
             _id: {
               type: 'string',
@@ -70,7 +78,8 @@ const options = {
             review_content: {
               type: 'string',
               description: 'Full text content of the review',
-              example: 'This film delivers an exceptional cinematic experience...'
+              example: 'This film delivers an exceptional cinematic ' +
+                'experience...'
             },
             rotten_tomatoes_link: {
               type: 'string',

@@ -111,7 +111,10 @@ reviewAggregateSchema.methods.toPublicJSON = function() {
 };
 
 // Static methods for aggregate operations
-reviewAggregateSchema.statics.updateMovieStats = async function(movieKey, reviewData) {
+reviewAggregateSchema.statics.updateMovieStats = async function(
+  movieKey,
+  reviewData
+) {
   const existing = await this.findOne({ movie_key: movieKey });
 
   if (existing) {
@@ -133,7 +136,10 @@ reviewAggregateSchema.statics.updateMovieStats = async function(movieKey, review
   }
 };
 
-reviewAggregateSchema.statics.getTopRated = async function(limit = 20, minReviews = 10) {
+reviewAggregateSchema.statics.getTopRated = async function(
+  limit = 20,
+  minReviews = 10
+) {
   return await this.find({
     total_reviews: { $gte: minReviews }
   })

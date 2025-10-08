@@ -88,7 +88,9 @@ const globalErrorHandler = (err, req, res, next) => {
     // Handle specific MongoDB/Mongoose errors
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
+    if (error.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
+    }
 
     sendErrorProd(error, res);
   }
@@ -107,7 +109,10 @@ const catchAsync = (fn) => {
  * Handle 404 errors
  */
 const notFound = (req, res, next) => {
-  const err = new AppError(`Can't find ${req.originalUrl} on this server!`, 404);
+  const err = new AppError(
+    `Can't find ${req.originalUrl} on this server!`,
+    404
+  );
   next(err);
 };
 
