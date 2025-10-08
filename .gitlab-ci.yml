@@ -1,0 +1,15 @@
+image: ubuntu:22.04
+
+stages:
+  - deploy
+
+before_script:
+  - apt update -qy
+  - apt install -y lftp
+
+deploy:
+  stage: deploy
+  script:
+    - lftp -e "set ssl:verify-certificate no; open $FTP_HOSTNAME; user $FTP_USERNAME $FTP_PASSWORD; mirror -X .* -X .*/ --reverse --verbose --delete solution/banana_peel ./banana_peel; bye"
+  only:
+    - banana_peel
