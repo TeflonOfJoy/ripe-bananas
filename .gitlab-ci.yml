@@ -1,0 +1,29 @@
+image: node:22-alpine
+
+variables:
+  OPENAPI_FILE: "https://banana-bean-ef021024f078.herokuapp.com/banana_bean_api/api-docs"
+  PUPPETEER_SKIP_DOWNLOAD: "true"
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+
+stages:
+  - test
+  - deploy
+
+api_validate:
+  stage: test
+  dependencies:
+    - build_docs
+  script:
+    - npm install -g bump-cli
+    - bump deploy --dry-run $OPENAPI_FILE --doc $BUMP_ID --token $BUMP_TOKEN
+  environment:
+    name: $CI_COMMIT_REF_NAME
+  allow_failure: true
+
+deploy_docs:
+  stage: deploy
+  script:
+    - npm install -g bump-cli
+    - bump deploy $OPENAPI_FILE --doc $BUMP_ID --token $BUMP_TOKEN
+  environment:
+    name: $CI_COMMIT_REF_NAME
