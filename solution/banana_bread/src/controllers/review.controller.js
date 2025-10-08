@@ -226,7 +226,7 @@ async getMovieReviewStats(req, res) {
       data: {
         movie_title: stats.movie_key,
         statistics: {
-          tomatometer: stats.tomatometer,
+          bananameter: stats.bananameter,
           top_critic_score: stats.top_critic_score,
           audience_score: stats.audience_score,
           certified_fresh: stats.certified_fresh,
@@ -346,7 +346,7 @@ async getTopRated(req, res) {
       data: {
         top_rated_movies: topMovies.map(movie => ({
           movie_key: movie.movie_key,
-          tomatometer: movie.tomatometer,
+          bananameter: movie.bananameter,
           total_reviews: movie.total_reviews,
           certified_fresh: movie.certified_fresh
         }))

@@ -51,7 +51,7 @@ const limiter = rateLimit({
   legacyHeaders: false
 });
 
-app.use('/api/', limiter);
+app.use('/', limiter);
 
 // Request logging for dev
 if (process.env.NODE_ENV === 'development') {
@@ -74,7 +74,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/reviews', reviewRoutes);
+app.use('/reviews', reviewRoutes);
 
 // Socket.IO chat functionality (TBD)
 
