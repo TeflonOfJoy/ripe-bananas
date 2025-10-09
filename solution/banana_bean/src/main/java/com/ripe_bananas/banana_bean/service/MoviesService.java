@@ -8,9 +8,6 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
