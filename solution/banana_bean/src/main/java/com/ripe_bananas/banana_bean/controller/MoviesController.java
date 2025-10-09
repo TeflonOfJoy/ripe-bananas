@@ -3,12 +3,16 @@ package com.ripe_bananas.banana_bean.controller;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.service.MoviesService;
 import com.ripe_bananas.banana_bean.specification_builders.MoviesSpecifications;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,19 +30,40 @@ public class MoviesController {
 
     private final MoviesService movies_service;
 
+    @Tag(name = "GET", description = "GET methods")
+    @Operation(summary = "Extract a subpage of movies",
+    description = "Select 1000 movies from the db that meet the request " +
+            "parameters cache the result and present a subpage of page_sz " +
+            "entries as a response")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType
+                    = "application/json",
+                    schema = @Schema(implementation = Movie.class))}),
+            @ApiResponse(responseCode = "404", description = "Movies not " +
+                    "found",  content = @Content)
+    })
     @GetMapping("/get_movies")
     public ResponseEntity<Page<Movie>> getMovies(
+            @Parameter(description = "Name of the movie")
             @RequestParam(required = false) String movie_name,
+            @Parameter(description = "Year of release")
             @RequestParam(required = false) Integer year,
+            @Parameter(description = "Minimum rating to search")
             @RequestParam(required = false) Float min_rating,
+            @Parameter(description = "Maximum rating to search")
             @RequestParam(required = false) Float max_rating,
+            @Parameter(description = "Minimum duration to search")
             @RequestParam(required = false) Integer min_duration,
+            @Parameter(description = "Maximum rating to search")
             @RequestParam(required = false) Integer max_duration,
+            @Parameter(description = "Sort field for the query")
             @RequestParam(required = false) String sort_by,
+            @Parameter(description = "Number of page to retrieve, if > 0 " +
+                    "retieve the next page of the same search")
             @RequestParam(value = "page_num", defaultValue = "0") int page_num,
+            @Parameter(description = "Number of entries per page")
             @RequestParam(value = "page_sz", defaultValue = "25") int page_size
     ) {
-        log.info("min rating {} | max rating {}", min_rating, max_rating);
         Specification<Movie> moviesSpecifications = MoviesSpecifications
                 .withFilters(
                         movie_name,
@@ -49,19 +74,11 @@ public class MoviesController {
                         max_duration
                 );
 
-        Pageable page_info;
-        if(sort_by != null) {
-            page_info = PageRequest.of(page_num, page_size, Sort.by(sort_by));
-        } else {
-            page_info = PageRequest.of(page_num, page_size);
-        }
+        Page<Movie> movie_page_response = movies_service
+                .findBySpecifiedFilters(moviesSpecifications,
+                        page_num, page_size, sort_by);
 
-        Page<Movie> movie_page_response = movies_service.findBySpecifiedFilters(
-                moviesSpecifications,
-                page_info
-        );
-
-        if(movie_page_response != null){
+        if(movie_page_response.isEmpty() == false){
             return ResponseEntity.ok(movie_page_response);
         }
 
