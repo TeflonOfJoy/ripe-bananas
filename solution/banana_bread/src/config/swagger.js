@@ -9,8 +9,8 @@ const options = {
   definition: {
     openapi: '3.1.0',
     info: {
-      title: 'Banana Bread API - Reviews',
-      version: '1.1.0',
+      title: 'Banana Bread API',
+      version: '1.2.0',
       description: 'Banana Bread is the express MongoDB API for the ' +
         'Ripe Bananas site, it provides access to movie reviews and chats'
     },
@@ -28,7 +28,7 @@ const options = {
           type: 'object',
           required: [
             'movie_title',
-            'critic_name',
+            'review_score',
             'review_type',
             'review_content'
           ],
@@ -44,8 +44,8 @@ const options = {
               example: 'Inception'
             },
             critic_name: {
-              type: 'string',
-              description: 'Name of the reviewer',
+              type: ['string', 'null'],
+              description: 'Name of the critic if applicable',
               example: 'Roger Ebert'
             },
             top_critic: {
@@ -54,8 +54,8 @@ const options = {
               example: true
             },
             publisher_name: {
-              type: 'string',
-              description: 'Name of the publication',
+              type: ['string', 'null'],
+              description: 'Name of the publication if applicable',
               example: 'Chicago Sun-Times'
             },
             review_type: {
@@ -65,9 +65,9 @@ const options = {
               example: 'Fresh'
             },
             review_score: {
-              type: ['number', 'null'],
-              description: 'Numeric score (0-100) if available',
-              example: 85
+              type: 'number',
+              description: 'Numeric score from 1.0 to 5.0',
+              example: 2.5
             },
             review_date: {
               type: 'string',
@@ -84,8 +84,8 @@ const options = {
             rotten_tomatoes_link: {
               type: 'string',
               format: 'uri',
-              description: 'Rotten Tomatoes URL for the review',
-              example: 'https://www.rottentomatoes.com/m/inception'
+              description: 'Partial Rotten Tomatoes URL for the review',
+              example: 'm/inception'
             }
           }
         },
@@ -99,7 +99,7 @@ const options = {
             statistics: {
               type: 'object',
               properties: {
-                tomatometer: {
+                bananameter: {
                   type: 'integer',
                   minimum: 0,
                   maximum: 100,

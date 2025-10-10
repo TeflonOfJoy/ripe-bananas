@@ -14,11 +14,27 @@ const router = express.Router();
 
 /**
  * @swagger
- * /reviews/search:
+ * /api/reviews/search:
  *   get:
  *     summary: Search reviews by content, movie, or critic
  *     description: Performs full-text search across review content,
- *       movie titles, and critic names with pagination
+                   example: ["review_content is required",
+                     "movie_title is required"]
+ *       '409':
+ *         description: Conflict - a review with these details already
+ *           exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "A review with these details already exists"
+ *       '500':tles, and critic names with pagination
  *     tags: [Reviews]
  *     parameters:
  *       - name: query
@@ -98,7 +114,7 @@ router.get('/search',
 
 /**
  * @swagger
- * /reviews/top-rated:
+ * /api/reviews/top-rated:
  *   get:
  *     summary: Get top rated movies based on review aggregates
  *     description: Returns movies with highest Tomatometer scores,
@@ -167,7 +183,7 @@ router.get('/top-rated',
 
 /**
  * @swagger
- * /reviews/movie/{title}:
+ * /api/reviews/movie/{title}:
  *   get:
  *     summary: Get all reviews for a specific movie
  *     description: Retrieves paginated reviews for a movie with
@@ -281,7 +297,7 @@ router.get('/movie/:title',
 
 /**
  * @swagger
- * /reviews/movie/{title}/stats:
+ * /api/reviews/movie/{title}/stats:
  *   get:
  *     summary: Get aggregated review statistics for a movie
  *     description: Returns precomputed Tomatometer scores and review
@@ -322,7 +338,7 @@ router.get('/movie/:title/stats',
 
 /**
  * @swagger
- * /reviews/{id}:
+ * /api/reviews/{id}:
  *   get:
  *     summary: Get a single review by MongoDB ObjectId
  *     description: Retrieves detailed information for a specific review
@@ -378,7 +394,7 @@ router.get('/:id',
 
 /**
  * @swagger
- * /reviews:
+ * /api/reviews:
  *   post:
  *     summary: Create a new movie review
  *     description: Creates a new review in MongoDB with the provided
@@ -428,8 +444,8 @@ router.get('/:id',
  *               review_score:
  *                 type: string
  *                 nullable: true
- *                 description: Optional numerical or letter score
- *                 example: "4/5"
+ *                 description: Optional numerical score
+ *                 example: "75"
  *               review_date:
  *                 type: string
  *                 format: date
@@ -440,12 +456,6 @@ router.get('/:id',
  *                 description: Full text content of the review
  *                 example: "A masterpiece of modern cinema that
  *                   challenges viewers with its complex narrative."
- *               film_ref:
- *                 type: string
- *                 nullable: true
- *                 description: Optional foreign key reference to
- *                   Postgres film database
- *                 example: "film_12345"
  *     responses:
  *       '200':
  *         description: Review successfully created
@@ -516,6 +526,143 @@ router.get('/:id',
 router.post('/', 
   reviewValidation.createReview,
   reviewController.createReview
+);
+
+/**
+ * @swagger
+ * /reviews/{id}:
+ *   patch:
+ *     summary: Update an existing review
+ *     description: Updates a review by ID with the provided fields.
+ *       Only provided fields will be updated.
+ *     tags: [Reviews]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: MongoDB ObjectId of the review
+ *           (24-character hex string)
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *         example: "68e1321d38d13baf8f6b4bae"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rotten_tomatoes_link:
+ *                 type: string
+ *                 description: Rotten Tomatoes path in format "m/title"
+ *                 example: "m/inception"
+ *               movie_title:
+ *                 type: string
+ *                 description: Title of the movie being reviewed
+ *                 example: "Inception"
+ *               critic_name:
+ *                 type: string
+ *                 description: Name of the critic who wrote the review
+ *                 example: "Roger Ebert"
+ *               top_critic:
+ *                 type: boolean
+ *                 description: Whether the critic is a top critic
+ *                 example: true
+ *               publisher_name:
+ *                 type: string
+ *                 description: Name of the publication
+ *                 example: "Chicago Sun-Times"
+ *               review_type:
+ *                 type: string
+ *                 enum: [Fresh, Rotten, Certified Fresh]
+ *                 description: Type of review rating
+ *                 example: "Fresh"
+ *               review_score:
+ *                 type: number
+ *                 format: double
+ *                 minimum: 1.0
+ *                 maximum: 5.0
+ *                 description: Numerical score between 1.0 and 5.0
+ *                 example: 4.5
+ *               review_date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date the review was published
+ *                 example: "2010-07-16"
+ *               review_content:
+ *                 type: string
+ *                 description: Full text content of the review
+ *                 example: "An updated masterpiece of cinema."
+ *     responses:
+ *       '200':
+ *         description: Review successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Review updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     review:
+ *                       $ref: '#/components/schemas/Review'
+ *       '400':
+ *         description: Invalid request data or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Schema validation failed"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Review content must be between 10-5000
+ *                     characters"]
+ *       '404':
+ *         description: Review not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Review not found"
+ *       '500':
+ *         description: Internal server error while updating review
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error while updating
+ *                     review"
+ */
+router.patch('/:id',
+  reviewValidation.updateReview,
+  reviewController.updateReview
 );
 
 module.exports = router;
