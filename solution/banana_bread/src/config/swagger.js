@@ -10,7 +10,7 @@ const options = {
     openapi: '3.1.0',
     info: {
       title: 'Banana Bread API',
-      version: '1.2.0',
+      version: '1.3.0',
       description: 'Banana Bread is the express MongoDB API for the ' +
         'Ripe Bananas site, it provides access to movie reviews and chats'
     },
