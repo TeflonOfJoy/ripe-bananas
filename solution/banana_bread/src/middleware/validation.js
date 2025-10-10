@@ -124,9 +124,9 @@ const reviewValidation = {
     body('review_content')
       .notEmpty()
       .trim()
-      .isLength({ min: 10, max: 5000 })
+      .isLength({ max: 5000 })
       .withMessage(
-        'Review content is required and must be between 10-5000 characters'
+        'Review content is required and must not exceed 5000 characters'
       ),
 
     body('review_date')
@@ -141,21 +141,28 @@ const reviewValidation = {
 
     body('review_score')
       .optional()
-      .custom((value) => {
-        if (value !== null && value !== undefined) {
-          const numValue = Number(value);
-          if (isNaN(numValue) || numValue < 0 || numValue > 10) {
-            throw new Error('Review score must be a number between 0-10');
-          }
-        }
-        return true;
-      }),
+      .isFloat({ min: 1.0, max: 5.0 })
+      .withMessage('Review score must be a double between 1.0 and 5.0'),
 
     body('rotten_tomatoes_link')
       .optional()
       .trim()
-      .isURL()
-      .withMessage('Rotten Tomatoes link must be a valid URL'),
+      .matches(/^m\/[\w-]+$/)
+      .withMessage(
+        'Rotten Tomatoes link must be in format "m/title"'
+      )
+  ],
+
+  updateReview: [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid MongoDB ObjectId'),
+
+    body('movie_title')
+      .optional()
+      .trim()
+      .isLength({ min: 1, max: 200 })
+      .withMessage('Movie title must be between 1-200 characters'),
 
     body('movie_id')
       .optional()
@@ -165,8 +172,10 @@ const reviewValidation = {
     body('movie_title')
       .optional()
       .trim()
-      .isLength({ max: 100 })
-      .withMessage('Film reference must be less than 100 characters')
+      .matches(/^m\/[\w-]+$/)
+      .withMessage(
+        'Rotten Tomatoes link must be in format "m/title"'
+      )
   ]
 };
 

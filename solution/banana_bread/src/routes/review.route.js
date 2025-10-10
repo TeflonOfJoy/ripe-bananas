@@ -34,7 +34,7 @@ router.get('/:id',
 
 /**
  * @swagger
- * /reviews:
+ * /api/reviews:
  *   post:
  *     summary: Create a new movie review
  *     description: Creates a new review in MongoDB with the provided
@@ -84,8 +84,8 @@ router.get('/:id',
  *               review_score:
  *                 type: string
  *                 nullable: true
- *                 description: Optional numerical or letter score
- *                 example: "4/5"
+ *                 description: Optional numerical score
+ *                 example: "75"
  *               review_date:
  *                 type: string
  *                 format: date
@@ -96,12 +96,6 @@ router.get('/:id',
  *                 description: Full text content of the review
  *                 example: "A masterpiece of modern cinema that
  *                   challenges viewers with its complex narrative."
- *               film_ref:
- *                 type: string
- *                 nullable: true
- *                 description: Optional foreign key reference to
- *                   Postgres film database
- *                 example: "film_12345"
  *     responses:
  *       '200':
  *         description: Review successfully created

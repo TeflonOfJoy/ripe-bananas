@@ -55,7 +55,11 @@ const reviewSchema = new mongoose.Schema({
   },
 
   review_score: {
-    type: mongoose.Schema.Types.Mixed,
+    type: Number,
+    min: 0,
+    max: 100,
+    index: true,
+    sparse: true,
     default: null
   },
 
@@ -68,13 +72,6 @@ const reviewSchema = new mongoose.Schema({
   review_content: {
     type: String,
     required: true
-  },
-
-  // Foreign key to Postgres (TBD)
-  film_ref: {
-    type: String,
-    index: true,
-    sparse: true
   },
 
   // Timestamps

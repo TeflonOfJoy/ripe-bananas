@@ -330,7 +330,10 @@ async searchReviews(req, res) {
 
 
 
-/**TBD */
+/**
+ * Create a review
+ * POST /api/reviews
+ */
 async createReview(req, res) {
     try {
       const reviewData = {
@@ -365,7 +368,7 @@ async createReview(req, res) {
       }
 
       if (error.code === 11000) {
-        return res.status(404).json({
+        return res.status(409).json({
           success: false,
           message: 'A review with these details already exists'
         });
@@ -374,6 +377,71 @@ async createReview(req, res) {
       res.status(500).json({
         success: false,
         message: 'Internal server error while creating review'
+      });
+    }
+  }
+
+/**
+ * Update a review
+ * PUT /api/reviews/:id
+ */
+async updateReview(req, res) {
+    try {
+      const { id } = req.params;
+
+      // Check if review exists
+      const existingReview = await Review.findById(id);
+
+      if (!existingReview) {
+        return res.status(404).json({
+          success: false,
+          message: 'Review not found'
+        });
+      }
+
+      // Update review with provided fields
+      const updateData = {
+        ...req.body,
+        updated_at: new Date()
+      };
+
+      const updatedReview = await Review.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      res.json({
+        success: true,
+        message: 'Review updated successfully',
+        data: {
+          review: updatedReview.toPublicJSON()
+        }
+      });
+
+    } catch (error) {
+      console.error('Error updating review:', error);
+
+      if (error.name === 'ValidationError') {
+        const validationErrors = Object.values(error.errors)
+          .map(err => err.message);
+        return res.status(400).json({
+          success: false,
+          message: 'Schema validation failed',
+          errors: validationErrors
+        });
+      }
+
+      if (error.name === 'CastError') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid review ID format'
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error while updating review'
       });
     }
   }
