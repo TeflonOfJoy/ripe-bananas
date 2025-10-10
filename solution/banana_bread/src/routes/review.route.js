@@ -34,7 +34,7 @@ router.get('/:id',
 
 /**
  * @swagger
- * /api/reviews:
+ * /api/api/reviews:
  *   post:
  *     summary: Create a new movie review
  *     description: Creates a new review in MongoDB with the provided
@@ -135,7 +135,7 @@ router.get('/:id',
  *                     type: string
  *                   example: ["review_content is required",
  *                     "movie_title is required"]
- *       '404':
+ *       '409':
  *         description: Duplicate review - a review with these details
  *           already exists
  *         content:
