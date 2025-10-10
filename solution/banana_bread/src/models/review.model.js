@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
   rotten_tomatoes_link: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     index: true
   },
@@ -21,7 +21,7 @@ const reviewSchema = new mongoose.Schema({
 
   critic_name: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     index: true
   },
@@ -29,14 +29,14 @@ const reviewSchema = new mongoose.Schema({
   // Top critic flag for filtering and aggregations
   top_critic: {
     type: Boolean,
-    required: true,
+    required: false,
     default: false,
     index: true
   },
 
   publisher_name: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     index: true
   },
@@ -54,7 +54,8 @@ const reviewSchema = new mongoose.Schema({
     max: 100,
     index: true,
     sparse: true,
-    default: null
+    default: null,
+    required: true
   },
 
   review_date: {
@@ -65,7 +66,7 @@ const reviewSchema = new mongoose.Schema({
 
   review_content: {
     type: String,
-    required: true
+    required: false
   },
 
   // Timestamps

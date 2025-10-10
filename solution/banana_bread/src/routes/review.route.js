@@ -394,7 +394,7 @@ router.get('/:id',
 
 /**
  * @swagger
- * /api/reviews:
+ * /api/api/reviews:
  *   post:
  *     summary: Create a new movie review
  *     description: Creates a new review in MongoDB with the provided
@@ -495,7 +495,7 @@ router.get('/:id',
  *                     type: string
  *                   example: ["review_content is required",
  *                     "movie_title is required"]
- *       '404':
+ *       '409':
  *         description: Duplicate review - a review with these details
  *           already exists
  *         content:
@@ -530,7 +530,7 @@ router.post('/',
 
 /**
  * @swagger
- * /reviews/{id}:
+ * /api/reviews/{id}:
  *   patch:
  *     summary: Update an existing review
  *     description: Updates a review by ID with the provided fields.
@@ -663,6 +663,88 @@ router.post('/',
 router.patch('/:id',
   reviewValidation.updateReview,
   reviewController.updateReview
+);
+
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     summary: Delete a review
+ *     description: Permanently deletes a review by its MongoDB ObjectId
+ *     tags: [Reviews]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: MongoDB ObjectId of the review to delete
+ *           (24-character hex string)
+ *         schema:
+ *           type: string
+ *           pattern: '^[a-fA-F0-9]{24}$'
+ *         example: "68e1321d38d13baf8f6b4bae"
+ *     responses:
+ *       '200':
+ *         description: Review successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Review deleted successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     review:
+ *                       $ref: '#/components/schemas/Review'
+ *       '400':
+ *         description: Invalid review ID format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid review ID format"
+ *       '404':
+ *         description: Review not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Review not found"
+ *       '500':
+ *         description: Internal server error while deleting review
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error while deleting
+ *                     review"
+ */
+router.delete('/:id',
+  generalValidation.mongoId,
+  reviewController.deleteReview
 );
 
 module.exports = router;

@@ -485,6 +485,49 @@ async updateReview(req, res) {
       });
     }
   }
+
+/**
+ * Delete a review
+ * DELETE /api/reviews/:id
+ */
+async deleteReview(req, res) {
+    try {
+      const { id } = req.params;
+
+      // Check if review exists and delete it
+      const deletedReview = await Review.findByIdAndDelete(id);
+
+      if (!deletedReview) {
+        return res.status(404).json({
+          success: false,
+          message: 'Review not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Review deleted successfully',
+        data: {
+          review: deletedReview.toPublicJSON()
+        }
+      });
+
+    } catch (error) {
+      console.error('Error deleting review:', error);
+
+      if (error.name === 'CastError') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid review ID format'
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error while deleting review'
+      });
+    }
+  }
 }
 
 function escapeRegex(string) {
