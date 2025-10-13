@@ -170,7 +170,7 @@ async processMovie(title) {
       }
     ]);
 
-    if (!stats.length) {
+    if (stats.length === 0) {
       console.warn(`No stats for movie: ${title}`);
       return;
     }

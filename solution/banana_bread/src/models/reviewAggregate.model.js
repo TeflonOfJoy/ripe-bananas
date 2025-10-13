@@ -117,7 +117,7 @@ reviewAggregateSchema.statics.updateMovieStats = async function(
 ) {
   const existing = await this.findOne({ movie_key: movieKey });
 
-  if (existing) {
+  if (existing !== null) {
     // Update existing aggregate
     existing.total_reviews = reviewData.total_reviews || 0;
     existing.positive_reviews = reviewData.positive_reviews || 0;
