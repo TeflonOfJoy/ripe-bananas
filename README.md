@@ -1,6 +1,6 @@
 # Code Style for IUMTWEB Assignement
 
-## Giudelines
+## Guidelines
 ### Indentation
 4 spaces, configure the IDE/TextEditor to use spaces (soft tabs) instead of Tabs
 (hard tabs).
