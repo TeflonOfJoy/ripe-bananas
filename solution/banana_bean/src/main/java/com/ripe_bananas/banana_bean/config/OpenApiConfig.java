@@ -36,9 +36,10 @@ public class OpenApiConfig {
 
         Info project_informations = new Info()
                 .title("Banana Bean API")
-                .description("Spring Boot REST API " +
-                "communicating with a PostgreSQL DataBase retrieving the " +
-                "static data related to the movies");
+                .description("Banana Bean is the Spring Boot Postgres API " +
+                        "for the Ripe Bananas site, " +
+                        "it provides access to static movie data")
+                .version("0.0.1");
 
         return new OpenAPI()
                 .info(project_informations)
