@@ -57,7 +57,7 @@ const sendErrorDev = (err, res) => {
  * Send error response in production (do not leak error details in prod)
  */
 const sendErrorProd = (err, res) => {
-  if (err.isOperational) {
+  if (err.isOperational === true) {
     res.status(err.statusCode).json({
       success: false,
       message: err.message

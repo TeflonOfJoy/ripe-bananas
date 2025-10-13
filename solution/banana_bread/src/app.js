@@ -11,8 +11,13 @@ const rateLimit = require('express-rate-limit');
 const http = require('http');
 const socketIo = require('socket.io');
 const database = require('./config/database');
-const { globalErrorHandler, notFound } = require('./middleware/errorHandler');
+const {
+  globalErrorHandler,
+  notFound
+} = require('./middleware/errorHandler');
 const reviewRoutes = require('./routes/review.route');
+const chatRoutes = require('./routes/chat.route');
+const Chat = require('./models/chat.model');
 
 const app = express();
 
@@ -29,7 +34,8 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: process.env.CORS_ORIGIN,
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    credentials: true
   }
 });
 
@@ -45,7 +51,7 @@ const limiter = rateLimit({
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS),
   message: {
     success: false,
-    message: 'Too many requests from this IP, please try again later.'
+    message: 'Too many requests, please try again later.'
   },
   standardHeaders: true,
   legacyHeaders: false
@@ -53,10 +59,11 @@ const limiter = rateLimit({
 
 app.use('/', limiter);
 
-// Request logging for dev
+// Logging for development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    const timestamp = new Date().toISOString();
+    console.log(`${timestamp} - ${req.method} ${req.path}`);
     next();
   });
 }
@@ -65,7 +72,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/health', (req, res) => {
   res.json({
     success: true,
-    service: 'movie-express-mongo',
+    service: 'Banana Bread',
     status: 'healthy',
     timestamp: new Date().toISOString(),
     database: database.getConnectionStatus(),
@@ -75,10 +82,101 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/chat', chatRoutes);
 
-// Socket.IO chat functionality (TBD)
+// Socket.IO chat functionality
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
 
-// 404 handler - must be after all routes
+  // Join a chat room
+  socket.on('join-room', async ({ room, username }) => {
+    try {
+      socket.join(room);
+      console.log(
+        `User ${username} (${socket.id}) joined room: ${room}`
+      );
+      
+      const history = await Chat.getRecentMessages(room, 50);
+      
+      socket.emit('chat-history', history.reverse());
+      
+      socket.to(room).emit('user-joined', {
+        username,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error joining room:', error);
+      socket.emit('error', { message: 'Failed to join room' });
+    }
+  });
+
+  // Handle new message
+  socket.on('send-message', async (data) => {
+    try {
+      const { room, username, message, room_type = 'general' } = data;
+      
+      if (room === undefined || username === undefined || message === undefined) {
+        return socket.emit('error', {
+          message: 'Missing required fields'
+        });
+      }
+      
+      if (message.trim().length === 0) {
+        return socket.emit('error', {
+          message: 'Message cannot be empty'
+        });
+      }
+      
+      if (message.length > 5000) {
+        return socket.emit('error', {
+          message: 'Message too long'
+        });
+      }
+      
+      const chatMessage = new Chat({
+        room,
+        room_type,
+        username,
+        message: message.trim(),
+        timestamp: new Date()
+      });
+      
+      await chatMessage.save();
+      
+      io.to(room).emit('new-message', chatMessage.toPublicJSON());
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      socket.emit('error', { message: 'Failed to send message' });
+    }
+  });
+
+  socket.on('leave-room', ({ room, username }) => {
+    socket.leave(room);
+    console.log(
+      `User ${username} (${socket.id}) left room: ${room}`
+    );
+    
+    socket.to(room).emit('user-left', {
+      username,
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  socket.on('typing', ({ room, username }) => {
+    socket.to(room).emit('user-typing', { username });
+  });
+
+  socket.on('stop-typing', ({ room, username }) => {
+    socket.to(room).emit('user-stop-typing', { username });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// 404 handler
 app.use(notFound);
 
 // Global error handler
@@ -91,7 +189,9 @@ const startServer = async () => {
     // Start HTTP server
     const PORT = process.env.PORT;
     server.listen(PORT, () => {
-      console.log(`MongoDB Express Server running on port ${PORT}`);
+      console.log(
+        `MongoDB Express Server running on port ${PORT}`
+      );
       console.log(`Environment: ${process.env.NODE_ENV}`);
     });
 
@@ -101,7 +201,6 @@ const startServer = async () => {
   }
 };
 
-// Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Shutting down gracefully...');
 

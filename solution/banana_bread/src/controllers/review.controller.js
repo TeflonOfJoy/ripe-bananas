@@ -14,7 +14,7 @@ class ReviewController {
 async getMovieReviews(req, res) {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (errors.isEmpty() === false) {
       return res.status(400).json({
         success: false,
         errors: errors.array()
@@ -48,19 +48,22 @@ async getMovieReviews(req, res) {
       filter.top_critic = topCritic === 'true';
     }
     
-    if (reviewType) {
+    if (reviewType !== undefined) {
       filter.review_type = reviewType;
     }
     
-    if (publisher) {
+    if (publisher !== undefined) {
       filter.publisher_name = new RegExp(publisher, 'i');
     }
 
     // Build sort query
     const sortQuery = {};
-    const sortField = sort === 'date' ? 'review_date' : 
-                    sort === 'score' ? 'review_score' :
-                    'review_date';
+    let sortField = 'review_date';
+    if (sort === 'date') {
+      sortField = 'review_date';
+    } else if (sort === 'score') {
+      sortField = 'review_score';
+    }
     sortQuery[sortField] = order === 'asc' ? 1 : -1;
 
     // Execute query with pagination
@@ -126,7 +129,7 @@ async getReviewById(req, res) {
 
     const review = await Review.findById(id).lean();
 
-    if (!review) {
+    if (review === null) {
       return res.status(404).json({
         success: false,
         message: 'Review not found'
@@ -163,7 +166,7 @@ async getMovieReviewStats(req, res) {
       movie_key: new RegExp(`^${escapeRegex(title)}$`, 'i') 
     }).lean();
 
-    if (!stats) {
+    if (stats === null) {
       console.log('No precomputed stats found, calculating on-demand...');
       
       const reviewStats = await Review.aggregate([
@@ -219,7 +222,7 @@ async getMovieReviewStats(req, res) {
       console.log('Found precomputed stats');
     }
 
-    if (!stats) {
+    if (stats === null) {
       return res.status(404).json({
         success: false,
         message: `No reviews found for movie: ${title}`
@@ -260,7 +263,7 @@ async getMovieReviewStats(req, res) {
 async searchReviews(req, res) {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (errors.isEmpty() === false) {
       return res.status(400).json({
         success: false,
         errors: errors.array()
@@ -278,7 +281,7 @@ async searchReviews(req, res) {
     // Build search filter
     const filter = {};
 
-    if (query) {
+    if (query !== undefined) {
       filter.$or = [
         { review_content: new RegExp(query, 'i') },
         { movie_title: new RegExp(query, 'i') },
@@ -286,11 +289,11 @@ async searchReviews(req, res) {
       ];
     }
 
-    if (title) {
+    if (title !== undefined) {
       filter.movie_title = new RegExp(title, 'i');
     }
 
-    if (criticName) {
+    if (criticName !== undefined) {
       filter.critic_name = new RegExp(criticName, 'i');
     }
 
@@ -432,7 +435,7 @@ async updateReview(req, res) {
       // Check if review exists
       const existingReview = await Review.findById(id);
 
-      if (!existingReview) {
+      if (existingReview === null) {
         return res.status(404).json({
           success: false,
           message: 'Review not found'
@@ -497,7 +500,7 @@ async deleteReview(req, res) {
       // Check if review exists and delete it
       const deletedReview = await Review.findByIdAndDelete(id);
 
-      if (!deletedReview) {
+      if (deletedReview === null) {
         return res.status(404).json({
           success: false,
           message: 'Review not found'
