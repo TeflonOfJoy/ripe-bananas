@@ -11,7 +11,7 @@ exports.getMessages = async (req, res, next) => {
     const { limit = 50, before } = req.query;
 
     const query = { room };
-
+    
     // Pagination: get messages before a specific timestamp
     if (before !== undefined) {
       query.timestamp = { $lt: new Date(before) };
@@ -33,23 +33,18 @@ exports.getMessages = async (req, res, next) => {
   }
 };
 
-// Check if username exists globally in any message
-exports.checkUsername = async (req, res, next) => {
+// Get active chat rooms
+exports.getActiveRooms = async (req, res, next) => {
   try {
-    const { username } = req.params;
+    const { room_type, hours = 24 } = req.query;
+    const timeWindow = parseInt(hours) * 60 * 60 * 1000;
 
-    if (username === undefined || username.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        message: 'A valid username is required'
-      });
-    }
-
-    const exists = await Chat.exists({ username: username.trim() });
+    const rooms = await Chat.getActiveRooms(room_type || null, timeWindow);
 
     res.json({
       success: true,
-      available: !exists
+      data: rooms,
+      count: rooms.length
     });
   } catch (error) {
     next(error);
