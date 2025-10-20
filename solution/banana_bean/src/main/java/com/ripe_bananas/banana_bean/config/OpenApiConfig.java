@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -24,6 +25,10 @@ public class OpenApiConfig {
     Server heroku_server = new Server();
     heroku_server.setUrl("https://banana-bean-ef021024f078.herokuapp.com/");
     heroku_server.setDescription("Heroku testing");
+
+    List<Server> servers = new ArrayList<>();
+    servers.add(server);
+    servers.add(heroku_server);
 
     Contact[] contacts = new Contact[3];
     contacts[0] = new Contact();
@@ -47,7 +52,7 @@ public class OpenApiConfig {
 
     return new OpenAPI()
       .info(project_informations)
-      .servers(List.of(server));
+      .servers(servers);
   }
 
 
