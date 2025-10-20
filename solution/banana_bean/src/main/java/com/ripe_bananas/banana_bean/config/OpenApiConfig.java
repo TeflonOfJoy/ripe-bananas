@@ -12,39 +12,43 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        Server server = new Server();
-        server.setUrl("http://localhost:8080");
-        server.setDescription("Spring Boot REST API for communicating with a " +
-                "postgreSQL database containing the data related to the " +
-                "movies");
-        server.setDescription("Local Development");
+  @Bean
+  public OpenAPI customOpenAPI() {
+    Server server = new Server();
+    server.setUrl("http://localhost:8080");
+    server.setDescription("Spring Boot REST API for communicating with a " +
+      "postgreSQL database containing the data related to the " +
+      "movies");
+    server.setDescription("Local Development");
 
-        Contact[] contacs = new Contact[3];
-        contacs[0] = new Contact();
-        contacs[0].setName("Stefano Golzio");
-        contacs[0].setEmail("stefano.golzio@edu.unito.it");
+    Server heroku_server = new Server();
+    heroku_server.setUrl("https://banana-bean-ef021024f078.herokuapp.com/");
+    heroku_server.setDescription("Heroku testing");
 
-        contacs[1] = new Contact();
-        contacs[1].setName("Emanuel Nibizi");
-        contacs[1].setEmail("emanuel.nibizi@edu.unito.it");
+    Contact[] contacts = new Contact[3];
+    contacts[0] = new Contact();
+    contacts[0].setName("Stefano Golzio");
+    contacts[0].setEmail("stefano.golzio@edu.unito.it");
 
-        contacs[2] = new Contact();
-        contacs[2].setName("Seriano Kukaj");
-        contacs[2].setEmail("seriano.kukaj@edu.unito.it");
+    contacts[1] = new Contact();
+    contacts[1].setName("Emanuel Nibizi");
+    contacts[1].setEmail("emanuel.nibizi@edu.unito.it");
 
-        Info project_informations = new Info()
-                .title("Banana Bean API")
-                .description("Banana Bean is the Spring Boot Postgres API " +
-                        "for the Ripe Bananas site, " +
-                        "it provides access to static movie data")
-                .version("0.0.1");
+    contacts[2] = new Contact();
+    contacts[2].setName("Seriano Kukaj");
+    contacts[2].setEmail("seriano.kukaj@edu.unito.it");
 
-        return new OpenAPI()
-                .info(project_informations)
-                .servers(List.of(server));
-    }
+    Info project_informations = new Info()
+      .title("Banana Bean API")
+      .description("Banana Bean is the Spring Boot Postgres API " +
+        "for the Ripe Bananas site, " +
+        "it provides access to static movie data")
+      .version("0.0.1");
+
+    return new OpenAPI()
+      .info(project_informations)
+      .servers(List.of(server));
+  }
 
 
 }
