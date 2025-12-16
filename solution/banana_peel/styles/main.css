@@ -1,0 +1,31 @@
+body{
+    background: linear-gradient(rgb(175, 143, 38), black);
+    /*background-image: url('https://i.pinimg.com/originals/f4/26/14/f426142ae405d6971e518bde32078898.gif');
+    background-image: url('https://media.tenor.com/bIxgXYcZodkAAAAM/monkey.gif');*/
+    /* background: #333; */
+}
+
+.main-panel{
+    background-blend-mode: blur(5px);
+    background-color: #333;
+}
+
+#message-input{
+    resize: none;
+}
+
+@media only screen and (max-width: 770px) {
+    .mobile-hidden {
+        display: none;
+    }
+
+    .col-mobile{
+      width: 100%!important;
+    }
+}
+
+@media only screen and (min-width: 770px) and (max-width: 1224px) {
+    .tablet-hidden{
+        display: none;
+    }
+}

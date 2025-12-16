@@ -1,0 +1,17 @@
+image: alpine:latest
+
+stages:
+  - deploy
+
+before_script:
+  - apk update -q
+  - apk add --no-cache lftp
+
+deploy:
+  stage: deploy
+  script:
+    - lftp -e "set ssl:verify-certificate no; open $FTP_HOSTNAME; user $FTP_USERNAME $FTP_PASSWORD; mirror -X .* -X .*/ --reverse --verbose --delete solution/banana_peel ./banana_peel; bye"
+  only:
+    - banana_peel
+  environment:
+    banana_peel
