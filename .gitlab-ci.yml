@@ -4,8 +4,8 @@ stages:
   - deploy
 
 before_script:
-  - apk update -qy
-  - apk install -y lftp
+  - apk update -q
+  - apk add --no-cache lftp
 
 deploy:
   stage: deploy
