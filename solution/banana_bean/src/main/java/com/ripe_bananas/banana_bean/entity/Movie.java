@@ -1,31 +1,46 @@
 package com.ripe_bananas.banana_bean.entity;
 
 import io.micrometer.common.lang.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@ToString(exclude = "genres")
+@EqualsAndHashCode(exclude = "genres")
 @Entity
 @Table(name = "movies")
 public class Movie {
     @Id
+    @Column(name = "id")
     private Integer id;
     @Nullable
+    @Column(name = "name",  nullable = false)
     private String name;
     @Nullable
+    @Column(name = "date")
     private Integer date;
     @Nullable
+    @Column(name = "tagline")
     private String tagline;
     @Nullable
+    @Column(name = "description")
     private String description;
     @Nullable
+    @Column(name = "minute")
     private Integer minute;
     @Nullable
+    @Column(name = "rating")
     private Float rating;
+
+    @ManyToMany
+    @JoinTable(
+      name = "movie_has_genres",
+      joinColumns =  @JoinColumn(name = "movie_id"),
+      inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private Set<Genre> genres;
 }

@@ -1,5 +1,6 @@
 package com.ripe_bananas.banana_bean.repository;
 
+import com.ripe_bananas.banana_bean.entity.Genre;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,18 +11,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MoviesRepo extends JpaRepository<Movie,  Integer>,
-                                    JpaSpecificationExecutor<Movie> {
+public interface GenresRepo extends JpaRepository<Genre, Integer>,
+  JpaSpecificationExecutor<Genre> {
 
-  @Query("SELECT m FROM Movie m JOIN m.genres g WHERE g.genre_id = " +
-    ":genreId")
-  Page<Movie> findByGenreId(@Param("genreId") String genreName,
+  @Query("SELECT g FROM Genre g JOIN g.movies m WHERE m.id = :movieId")
+  Page<Movie> findByMovieId(@Param("movieId") Integer movieId,
                             Pageable pageable);
 
-  @Query("SELECT m FROM Movie m JOIN m.genres g WHERE g.genre_name = " +
-    ":genreName")
-  Page<Movie> findByGenreName(@Param("genreName") String genreName,
-                              Pageable pageable);
-
-  Page<Movie> findRandomMovies()
 }

@@ -13,20 +13,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MoviesService {
 
-    private final MoviesRepo movies_repo;
+  private final MoviesRepo movies_repo;
 
-    public Page<Movie> findBySpecifiedFilters(Specification<Movie> filters,
-                                              int page_number,
-                                              int page_size,
-                                              String sort_by) {
-        Pageable page_info;
+  public Page<Movie> findBySpecifiedFilters(Specification<Movie> filters,
+                                            int page_number,
+                                            int page_size,
+                                            String sort_by) {
+    Pageable page_info;
 
-        if(sort_by == null) {
-            page_info = PageRequest.of(page_number, page_size);
-        } else {
-            page_info = PageRequest.of(page_number, page_size, Sort.by(sort_by));
-        }
-
-        return movies_repo.findAll(filters, page_info);
+    if (sort_by == null) {
+      page_info = PageRequest.of(page_number, page_size);
+    } else {
+      page_info = PageRequest.of(page_number, page_size, Sort.by(sort_by));
     }
+
+    return movies_repo.findAll(filters, page_info);
+  }
 }
