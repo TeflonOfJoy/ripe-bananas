@@ -118,10 +118,6 @@ io.on('connection', (socket) => {
 });
 
 // Forward chat events from backend to clients
-chatSocket.on('room-history', (data) => {
-  io.emit('room-history', data);
-});
-
 chatSocket.on('new-message', (data) => {
   io.to(data.room).emit('new-message', data);
 });
@@ -160,7 +156,6 @@ app.use('/api/chat', chatRoutes);
 // API Routes - Static data (PostgreSQL via Spring Boot)
 app.use('/api/movies', movieRoutes);
 app.use('/api/actors', actorRoutes);
-app.use('/api/oscars', oscarRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
