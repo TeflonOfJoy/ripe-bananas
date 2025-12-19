@@ -3,7 +3,6 @@ package com.ripe_bananas.banana_bean.service;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.repository.GenresRepo;
 import com.ripe_bananas.banana_bean.repository.MoviesRepo;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

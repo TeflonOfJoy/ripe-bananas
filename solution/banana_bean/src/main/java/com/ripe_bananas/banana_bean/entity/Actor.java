@@ -1,27 +1,25 @@
 package com.ripe_bananas.banana_bean.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "posters")
-public class Poster {
-    @Id
-    private Integer id;
-    @Nullable
-    private String link;
+@Table(name = "actors")
+public class Actor {
+  @Id
+  @Column(name = "id")
+  private Integer id;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "poster")
-    private Movie movie;
+  @Column(name = "name")
+  private String name;
 }

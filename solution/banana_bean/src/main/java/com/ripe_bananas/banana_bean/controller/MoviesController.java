@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/banana_bean_api")
@@ -45,9 +50,13 @@ public class MoviesController {
       "found", content = @Content)
   })
   @GetMapping("/get_movies")
-  public ResponseEntity<Page<Movie>> getMovies(
+  public ResponseEntity<List<Map<String, Object>>> getMovies(
+    @Parameter(description = "list of fields to select")
+    @RequestParam(value = "fields") List<String> fields,
     @Parameter(description = "Name of the movie")
     @RequestParam(required = false) String movie_name,
+    @Parameter(description = "list of genres to search the movie with")
+    @RequestParam(required = false) List<String> genres,
     @Parameter(description = "Year of release")
     @RequestParam(required = false) Integer year,
     @Parameter(description = "Minimum rating to search")
@@ -66,39 +75,25 @@ public class MoviesController {
     @Parameter(description = "Number of entries per page")
     @RequestParam(value = "page_sz", defaultValue = "25") int page_size
   ) {
-    Specification<Movie> moviesSpecifications = MoviesSpecifications
-      .withFilters(
-        movie_name,
-        year,
-        min_rating,
-        max_rating,
-        min_duration,
-        max_duration
-      );
+    List<Map<String, Object>> response = movies_service.findMoviesWithFields(fields,
+      movie_name, genres, min_rating, max_rating, year, null, min_duration,
+      max_duration);
 
-    Page<Movie> movie_page_response = movies_service
-      .findBySpecifiedFilters(moviesSpecifications,
-        page_num, page_size, sort_by);
-
-    if (movie_page_response.isEmpty() == false) {
-      return ResponseEntity.ok(movie_page_response);
+    if((response != null) && (response.isEmpty() == false)){
+      return ResponseEntity.ok().body(response);
     }
 
     return ResponseEntity.notFound().build();
   }
 
-  @GetMapping("/get_movies_by_genres")
-  public ResponseEntity<Page<Movie>> getMoviesBySpecifiedGenre(
-    @Parameter(description = "genre name to search movies with")
-    @RequestParam(value = "genre_name", defaultValue = "") String genre_name
-  ) {
-    Page<Movie> movie_page_response =
-      movies_genres_service.getMoviesGenres(genre_name);
+  @GetMapping("/get_movie_details/{id}")
+  public ResponseEntity<Movie> getMoviesBySpecifiedGenre(Integer id) {
+    Movie response = movies_service.findMovieDetailsById(id);
 
-    if(movie_page_response.isEmpty() == false) {
-      return ResponseEntity.ok().body(movie_page_response);
+    if(response == null){
+      return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.notFound().build();
+    return ResponseEntity.ok().body(response);
   }
 }
