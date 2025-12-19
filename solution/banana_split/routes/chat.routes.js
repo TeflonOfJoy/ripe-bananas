@@ -39,10 +39,10 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
+// Check username availability
+router.get('/username/:username', proxyRequest);
+
 // Get message history for a room
 router.get('/:room', proxyRequest);
-
-// Get active chat rooms
-router.get('/rooms/active', proxyRequest);
 
 module.exports = router;
