@@ -1,4 +1,4 @@
-image: alpine:latest
+image: node:alpine
 
 variables:
   CORS_ORIGIN: https://split-banana-88c30c01daf5.herokuapp.com/
@@ -15,8 +15,6 @@ stages:
 
 build_docs:
   stage: build
-  before_script:
-    - apk add --update --no-cache nodejs npm
   script:
     - cd $SERVICE_DIR
     - npm ci --cache .npm --prefer-offline
