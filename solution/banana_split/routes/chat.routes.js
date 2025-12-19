@@ -39,10 +39,61 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-// Check username availability
+/**
+ * @swagger
+ * /api/chat/username/{username}:
+ *   get:
+ *     tags: [Chat]
+ *     summary: Check username availability
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Username availability status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 available:
+ *                   type: boolean
+ */
 router.get('/username/:username', proxyRequest);
 
-// Get message history for a room
+/**
+ * @swagger
+ * /api/chat/{room}:
+ *   get:
+ *     tags: [Chat]
+ *     summary: Get message history for a room
+ *     parameters:
+ *       - name: room
+ *         in: path
+ *         required: true
+ *         description: Room/topic name
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Chat message history
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ChatMessage'
+ */
 router.get('/:room', proxyRequest);
 
 module.exports = router;

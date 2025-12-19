@@ -42,28 +42,142 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-// Search reviews
+/**
+ * @swagger
+ * /api/reviews/search:
+ *   get:
+ *     tags: [Reviews]
+ *     summary: Search reviews
+ *     parameters:
+ *       - name: q
+ *         in: query
+ *         description: Search query
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of matching reviews
+ */
 router.get('/search', proxyRequest);
 
-// Get top rated reviews
+/**
+ * @swagger
+ * /api/reviews/top-rated:
+ *   get:
+ *     tags: [Reviews]
+ *     summary: Get top rated reviews
+ *     responses:
+ *       200:
+ *         description: List of top rated reviews
+ */
 router.get('/top-rated', proxyRequest);
 
-// Get reviews by movie title
+/**
+ * @swagger
+ * /api/reviews/movie/{title}:
+ *   get:
+ *     tags: [Reviews]
+ *     summary: Get reviews by movie title
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Reviews for the movie
+ */
 router.get('/movie/:title', proxyRequest);
 
-// Get movie statistics
+/**
+ * @swagger
+ * /api/reviews/movie/{title}/stats:
+ *   get:
+ *     tags: [Reviews]
+ *     summary: Get movie statistics
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Movie statistics including bananameter score
+ */
 router.get('/movie/:title/stats', proxyRequest);
 
-// Get single review by ID
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   get:
+ *     tags: [Reviews]
+ *     summary: Get single review by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review details
+ */
 router.get('/:id', proxyRequest);
 
-// Create new review
+/**
+ * @swagger
+ * /api/reviews:
+ *   post:
+ *     tags: [Reviews]
+ *     summary: Create new review
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Review'
+ *     responses:
+ *       201:
+ *         description: Review created
+ */
 router.post('/', proxyRequest);
 
-// Update review
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   patch:
+ *     tags: [Reviews]
+ *     summary: Update review
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review updated
+ */
 router.patch('/:id', proxyRequest);
 
-// Delete review
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     tags: [Reviews]
+ *     summary: Delete review
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review deleted
+ */
 router.delete('/:id', proxyRequest);
 
 module.exports = router;
