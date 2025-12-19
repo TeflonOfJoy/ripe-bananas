@@ -2,7 +2,7 @@
 var db_sender_name = ""
 var db_sender_color = ""
 var socket = null;
-var banana_split_url = "https://banana-bread-36752c90e972.herokuapp.com/";
+var banana_split_url = "http://localhost:3000";
 
 $(window).on('load' ,() => {
     db_sender_name = getCookie("sender_name");
