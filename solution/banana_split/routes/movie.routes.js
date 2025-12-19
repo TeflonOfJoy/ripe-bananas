@@ -40,28 +40,25 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-// Get all movies (with pagination)
+/**
+ * @swagger
+ * /api/movies:
+ *   get:
+ *     tags: [Movies]
+ *     summary: Get all movies with pagination
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         schema:
+ *           type: integer
+ *       - name: limit
+ *         in: query
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of movies
+ */
 router.get('/', proxyRequest);
-
-// Search movies
-router.get('/search', proxyRequest);
-
-// Get movie by ID
-router.get('/:id', proxyRequest);
-
-// Get movie cast
-router.get('/:id/cast', proxyRequest);
-
-// Get movie awards
-router.get('/:id/awards', proxyRequest);
-
-// Create new movie
-router.post('/', proxyRequest);
-
-// Update movie
-router.put('/:id', proxyRequest);
-
-// Delete movie
-router.delete('/:id', proxyRequest);
 
 module.exports = router;
