@@ -533,14 +533,14 @@ router.post('/',
  * /api/reviews/{id}:
  *   patch:
  *     summary: Update an existing review
- *     description: Updates a review by ID with the provided fields.
+ *     description: Updates a review by Id with the provided fields.
  *       Only provided fields will be updated.
  *     tags: [Reviews]
  *     parameters:
  *       - name: id
  *         in: path
  *         required: true
- *         description: MongoDB ObjectId of the review
+ *         description: Id of the review
  *           (24-character hex string)
  *         schema:
  *           type: string
@@ -670,13 +670,13 @@ router.patch('/:id',
  * /api/reviews/{id}:
  *   delete:
  *     summary: Delete a review
- *     description: Permanently deletes a review by its MongoDB ObjectId
+ *     description: Permanently deletes a review by its Id
  *     tags: [Reviews]
  *     parameters:
  *       - name: id
  *         in: path
  *         required: true
- *         description: MongoDB ObjectId of the review to delete
+ *         description: Id of the review to delete
  *           (24-character hex string)
  *         schema:
  *           type: string
@@ -702,7 +702,7 @@ router.patch('/:id',
  *                     review:
  *                       $ref: '#/components/schemas/Review'
  *       '400':
- *         description: Invalid review ID format
+ *         description: Invalid review Id format
  *         content:
  *           application/json:
  *             schema:
@@ -713,7 +713,7 @@ router.patch('/:id',
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "Invalid review ID format"
+ *                   example: "Invalid review Id format"
  *       '404':
  *         description: Review not found
  *         content:

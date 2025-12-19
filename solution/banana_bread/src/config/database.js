@@ -23,7 +23,7 @@ class Database {
         ? process.env.MONGODB_TEST_URI 
         : process.env.MONGODB_URI;
 
-      if (!mongoUri) {
+      if (mongoUri === undefined) {
         throw new Error('MongoDB URI not provided in environment variables');
       }
 
@@ -70,7 +70,7 @@ class Database {
    * @returns {Promise<void>}
    */
   async disconnect() {
-    if (this.connection) {
+    if (this.connection !== null) {
       await mongoose.connection.close();
       console.log('MongoDB connection closed');
     }
