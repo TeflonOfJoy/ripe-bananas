@@ -73,7 +73,7 @@ const io = socketIo(server, {
 });
 
 // Connect to backend chat server via Socket.IO
-const chatSocket = socketClient(process.env.SOCKET_CHAT_SERVER_URL || 'http://localhost:3001', {
+const chatSocket = socketClient(process.env.BANANA_BREAD_URL || 'http://localhost:3001', {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
@@ -143,8 +143,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     backends: {
-      mongodb: process.env.MONGODB_SERVER_URL,
-      springboot: process.env.SPRINGBOOT_SERVER_URL
+      mongodb: process.env.BANANA_BREAD_URL,
+      springboot: process.env.BANANA_BEAN_URL
     }
   });
 });
@@ -185,8 +185,8 @@ server.listen(PORT, () => {
   console.log('='.repeat(50));
   console.log(`Main Router Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`MongoDB Server: ${process.env.MONGODB_SERVER_URL}`);
-  console.log(`Spring Boot Server: ${process.env.SPRINGBOOT_SERVER_URL}`);
+  console.log(`MongoDB Server: ${process.env.BANANA_BREAD_URL}`);
+  console.log(`Spring Boot Server: ${process.env.BANANA_BEAN_URL}`);
   console.log('='.repeat(50));
 });
 
