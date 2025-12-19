@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
   // Handle new message
   socket.on('send-message', async (data) => {
     try {
-      const { room, username, message, room_type = 'general' } = data;
+      const { room, username, message, colour = '#888888' } = data;
       
       if (room === undefined || username === undefined || message === undefined) {
         return socket.emit('error', {
@@ -135,7 +135,7 @@ io.on('connection', (socket) => {
       
       const chatMessage = new Chat({
         room,
-        room_type,
+        colour,
         username,
         message: message.trim(),
         timestamp: new Date()
