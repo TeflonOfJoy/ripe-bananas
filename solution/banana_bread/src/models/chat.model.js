@@ -13,12 +13,10 @@ const chatSchema = new mongoose.Schema({
     maxlength: 200
   },
 
-  room_type: {
+  colour: {
     type: String,
     required: true,
-    enum: ['movie', 'actor', 'director', 'genre', 'general'],
-    default: 'general',
-    index: true
+    default: '#888888'
   },
 
   username: {
@@ -47,15 +45,14 @@ const chatSchema = new mongoose.Schema({
 
 // Compound indexes for efficient queries
 chatSchema.index({ room: 1, timestamp: -1 });
-chatSchema.index({ room_type: 1, timestamp: -1 });
 chatSchema.index({ username: 1, timestamp: -1 });
 
 // Method to get public representation
-chatSchema.methods.toPublicJSON = function() {
+chatSchema.methods.toPublicJSON = function () {
   return {
     _id: this._id,
     room: this.room,
-    room_type: this.room_type,
+    colour: this.colour,
     username: this.username,
     message: this.message,
     timestamp: this.timestamp
@@ -63,7 +60,7 @@ chatSchema.methods.toPublicJSON = function() {
 };
 
 // Static method to get recent messages for a room
-chatSchema.statics.getRecentMessages = async function(
+chatSchema.statics.getRecentMessages = async function (
   room,
   limit = 50
 ) {
