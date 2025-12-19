@@ -1,4 +1,4 @@
-image: node:22-alpine
+image: alpine:latest
 
 variables:
   CORS_ORIGIN: https://split-banana-88c30c01daf5.herokuapp.com/
