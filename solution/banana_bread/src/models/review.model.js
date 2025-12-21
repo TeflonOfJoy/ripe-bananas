@@ -12,6 +12,12 @@ const reviewSchema = new mongoose.Schema({
     index: true
   },
 
+  movie_id: {
+    type: Number,
+    required: true,
+    index: true
+  },
+
   movie_title: {
     type: String,
     required: true,
@@ -86,9 +92,9 @@ const reviewSchema = new mongoose.Schema({
 });
 
 // Compound indexes for common query patterns
-reviewSchema.index({ movie_title: 1, review_date: -1 });
-reviewSchema.index({ movie_title: 1, top_critic: 1 }); 
-reviewSchema.index({ movie_title: 1, review_type: 1 });
+reviewSchema.index({ movie_id: 1, review_date: -1 });
+reviewSchema.index({ movie_id: 1, top_critic: 1 }); 
+reviewSchema.index({ movie_id: 1, review_type: 1 });
 reviewSchema.index({ critic_name: 1, review_date: -1 }); 
 reviewSchema.index({ publisher_name: 1, review_date: -1 });
 
@@ -102,6 +108,7 @@ reviewSchema.pre('save', function(next) {
 reviewSchema.methods.toPublicJSON = function() {
   return {
     id: this._id,
+    movie_id: this.movie_id,
     movie_title: this.movie_title,
     critic_name: this.critic_name,
     top_critic: this.top_critic,
@@ -115,12 +122,12 @@ reviewSchema.methods.toPublicJSON = function() {
 };
 
 // Static methods for aggregations
-reviewSchema.statics.getMovieStats = async function(movieTitle) {
+reviewSchema.statics.getMovieStats = async function(movieId) {
   const stats = await this.aggregate([
-    { $match: { movie_title: movieTitle } },
+    { $match: { movie_id: movieId } },
     {
       $group: {
-        _id: '$movie_title',
+        _id: '$movie_id',
         total_reviews: { $sum: 1 },
         fresh_reviews: {
           $sum: {

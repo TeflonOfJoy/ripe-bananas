@@ -83,18 +83,6 @@ const reviewValidation = {
       .withMessage('Critic name must be less than 100 characters')
   ],
 
-  getTopRated: [
-    query('limit')
-      .optional()
-      .isInt({ min: 1, max: 100 })
-      .withMessage('Limit must be between 1-100'),
-    
-    query('minReviews')
-      .optional()
-      .isInt({ min: 1 })
-      .withMessage('minReviews must be a positive integer')
-  ],
-
   createReview: [
     body('movie_title')
       .notEmpty()
