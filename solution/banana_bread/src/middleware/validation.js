@@ -158,6 +158,11 @@ const reviewValidation = {
       .isMongoId()
       .withMessage('Invalid MongoDB ObjectId'),
 
+    body('movie_id')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Movie ID must be a positive integer'),
+
     body('movie_title')
       .optional()
       .trim()
