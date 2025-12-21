@@ -18,7 +18,6 @@ const proxyRequest = async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.body,
-      params: req.query,
       headers: {
         'Content-Type': 'application/json'
       },
