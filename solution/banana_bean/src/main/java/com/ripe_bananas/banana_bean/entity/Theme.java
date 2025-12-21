@@ -1,23 +1,26 @@
 package com.ripe_bananas.banana_bean.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.persistence.*;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "themes")
+@ToString(exclude = "movie")
+@EqualsAndHashCode(exclude = "movie")
 public class Theme {
-  @Id
-  @Column(name = "id")
-  private Integer id;
+  @EmbeddedId
+  @JsonValue
+  private ThemeId id;
 
-  @Column(name = "theme")
-  private String Theme;
+  @JsonIgnore
+  @ManyToOne
+  @MapsId("id")
+  @JoinColumn(name = "id")
+  private Movie movie;
 }

@@ -1,23 +1,30 @@
 package com.ripe_bananas.banana_bean.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "country")
+@ToString(exclude = "movies")
+@EqualsAndHashCode(exclude = "movies")
 public class Country {
   @Id
   @Column(name = "id")
+  @JsonIgnore
   private Integer id;
 
   @Column(name = "name")
-  private String name;
+  @JsonValue
+  private String country_name;
+
+  @JsonIgnore
+  @ManyToMany(mappedBy = "countries")
+  private Set<Movie> movies;
 }

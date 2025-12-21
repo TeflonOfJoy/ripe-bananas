@@ -2,27 +2,33 @@ package com.ripe_bananas.banana_bean.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "crew")
+@Table(name = "releases")
 @ToString(exclude = "movie")
 @EqualsAndHashCode(exclude = "movie")
-public class Crew {
+public class Release {
   @EmbeddedId
   @JsonUnwrapped
-  private CrewId id;
+  private ReleaseId id;
 
-  @JsonIgnore
+  @Column(name = "rating", length = 999)
+  private String rating;
+
   @ManyToOne
+  @JsonIgnore
   @MapsId("id")
   @JoinColumn(name = "id")
   private Movie movie;
+
+  @ManyToOne
+  @MapsId("country")
+  @JoinColumn(name = "country")
+  @JsonUnwrapped
+  private Country country;
 }
