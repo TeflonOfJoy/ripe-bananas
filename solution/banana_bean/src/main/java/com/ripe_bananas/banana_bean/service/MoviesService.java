@@ -1,5 +1,6 @@
 package com.ripe_bananas.banana_bean.service;
 
+import com.ripe_bananas.banana_bean.entity.BasicMovieProjection;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.repository.MoviesRepo;
 import com.ripe_bananas.banana_bean.specification_builders.MoviesSpecifications;
@@ -97,14 +98,31 @@ public class MoviesService {
     return new ArrayList<>(movie_map.values());
   }
 
+  public Page<BasicMovieProjection> filterByGenreName(String genre, int page_num, int page_sz){
+    Pageable page = PageRequest.of(page_num, page_sz);
+    return movies_repo.findByGenreName(genre, page);
+  }
+
   public Movie findMovieDetailsById(Integer movie_id){
-    if(movie_id == null || movie_id <= 0){
+    if(movie_id == null || movie_id <= 1000000){
       return null;
     }
 
     Movie response = movies_repo.findMovieDetailById(movie_id);
 
     return response;
+  }
+
+  public Page<BasicMovieProjection> findMoviesWithActor(Integer actor_id,
+                                                        int page_num,
+                                                        int page_size){
+    if(actor_id == null || actor_id <= 0){
+      return null;
+    }
+
+    Pageable page = PageRequest.of(page_num, page_size);
+
+    return movies_repo.findMoviesWithActor(actor_id, page);
   }
 
 }
