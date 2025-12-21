@@ -17,7 +17,6 @@ const proxyRequest = async (req, res, next) => {
     const response = await axios({
       method: req.method,
       url: url,
-      params: req.query,
       headers: {
         'Content-Type': 'application/json'
       },
