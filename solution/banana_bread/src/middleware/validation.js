@@ -8,44 +8,43 @@ const { body, param, query } = require('express-validator');
 // Review validation rules
 const reviewValidation = {
   getMovieReviews: [
-    param('title')
+    param('id')
       .notEmpty()
-      .trim()
-      .isLength({ min: 1, max: 200 })
+      .isInt({ min: 1 })
       .withMessage(
-        'Movie title is required and must be between 1-200 characters'
+        'Movie ID is required and must be a positive integer'
       ),
-    
+
     query('page')
       .optional()
       .isInt({ min: 1 })
       .withMessage('Page must be a positive integer'),
-    
+
     query('limit')
       .optional()
       .isInt({ min: 1, max: 100 })
       .withMessage('Limit must be between 1-100'),
-    
+
     query('sort')
       .optional()
       .isIn(['date', 'score'])
       .withMessage('Sort must be either "date" or "score"'),
-    
+
     query('order')
       .optional()
       .isIn(['asc', 'desc'])
       .withMessage('Order must be either "asc" or "desc"'),
-    
+
     query('topCritic')
       .optional()
       .isBoolean()
       .withMessage('topCritic must be a boolean'),
-    
+
     query('reviewType')
       .optional()
       .isIn(['Fresh', 'Rotten', 'Certified Fresh'])
       .withMessage('reviewType must be Fresh, Rotten, or Certified Fresh'),
-    
+
     query('publisher')
       .optional()
       .trim()
@@ -59,23 +58,23 @@ const reviewValidation = {
       .trim()
       .isLength({ min: 2, max: 100 })
       .withMessage('Search query must be between 2-100 characters'),
-    
+
     query('page')
       .optional()
       .isInt({ min: 1 })
       .withMessage('Page must be a positive integer'),
-    
+
     query('limit')
       .optional()
       .isInt({ min: 1, max: 100 })
       .withMessage('Limit must be between 1-100'),
-    
+
     query('title')
       .optional()
       .trim()
       .isLength({ max: 200 })
       .withMessage('Movie title must be less than 200 characters'),
-    
+
     query('criticName')
       .optional()
       .trim()
@@ -84,6 +83,13 @@ const reviewValidation = {
   ],
 
   createReview: [
+    body('movie_id')
+      .notEmpty()
+      .isInt({ min: 1 })
+      .withMessage(
+        'Movie ID is required and must be a positive integer'
+      ),
+
     body('movie_title')
       .notEmpty()
       .trim()
@@ -151,6 +157,11 @@ const reviewValidation = {
     param('id')
       .isMongoId()
       .withMessage('Invalid MongoDB ObjectId'),
+
+    body('movie_id')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Movie ID must be a positive integer'),
 
     body('movie_title')
       .optional()
