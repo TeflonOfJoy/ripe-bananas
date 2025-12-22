@@ -1,9 +1,8 @@
 package com.ripe_bananas.banana_bean.controller;
 
+import com.ripe_bananas.banana_bean.entity.BasicMovieProjection;
 import com.ripe_bananas.banana_bean.entity.Movie;
-import com.ripe_bananas.banana_bean.service.MoviesGenresService;
 import com.ripe_bananas.banana_bean.service.MoviesService;
-import com.ripe_bananas.banana_bean.specification_builders.MoviesSpecifications;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,21 +10,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/banana_bean_api")
@@ -35,7 +28,6 @@ import java.util.Objects;
 public class MoviesController {
 
   private final MoviesService movies_service;
-  private final MoviesGenresService movies_genres_service;
 
   @Tag(name = "GET", description = "GET methods")
   @Operation(summary = "Extract a subpage of movies",
@@ -79,18 +71,43 @@ public class MoviesController {
       movie_name, genres, min_rating, max_rating, year, null, min_duration,
       max_duration);
 
-    if((response != null) && (response.isEmpty() == false)){
+    if ((response != null) && (response.isEmpty() == false)) {
       return ResponseEntity.ok().body(response);
     }
 
     return ResponseEntity.notFound().build();
   }
 
+  @GetMapping("/get_movies_by_genres")
+  public ResponseEntity<Page<BasicMovieProjection>> getMoviesByGenres(
+    @RequestParam(value ="genre_name") String genre_name,
+    @RequestParam(value = "page_num",defaultValue = "0") int page_num,
+    @RequestParam(value ="page_sz") int page_size) {
+    return ResponseEntity.ok()
+      .body(movies_service.filterByGenreName(genre_name, page_num, page_size));
+  }
+
   @GetMapping("/get_movie_details/{id}")
-  public ResponseEntity<Movie> getMoviesBySpecifiedGenre(Integer id) {
+  public ResponseEntity<Movie> getMovieDetails(@PathVariable Integer id) {
     Movie response = movies_service.findMovieDetailsById(id);
 
-    if(response == null){
+    if (response == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok().body(response);
+  }
+
+  @GetMapping("/get_movies_with_actor")
+  public ResponseEntity<Page<BasicMovieProjection>> getMoviesWithActor(
+    @RequestParam(value = "actor_id") Integer actor_id,
+    @RequestParam(value = "page_num", defaultValue = "0") int page_num,
+    @RequestParam(value = "page_sz", defaultValue = "25") int page_sz
+  ){
+    Page<BasicMovieProjection> response =
+      movies_service.findMoviesWithActor(actor_id, page_num, page_sz);
+
+    if (response == null || response.isEmpty() == true){
       return ResponseEntity.notFound().build();
     }
 
