@@ -1,11 +1,11 @@
-image: ubuntu:22.04
+image: alpine:latest
 
 stages:
   - deploy
 
 before_script:
-  - apt update -qy
-  - apt install -y lftp
+  - apk update -q
+  - apk add --no-cache lftp
 
 deploy:
   stage: deploy

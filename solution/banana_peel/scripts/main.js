@@ -1,6 +1,8 @@
 //Chat behaviour
 var db_sender_name = ""
 var db_sender_color = ""
+var socket = null;
+var banana_split_url = "http://localhost:3000";
 
 $(window).on('load' ,() => {
     db_sender_name = getCookie("sender_name");
@@ -16,13 +18,57 @@ $(window).on('load' ,() => {
         console.log("Cookie found");
         $('#name-selector').addClass('d-none');
         $('#chat-input').removeClass('d-none');
+        initSocket();
     }
 });
 
-$('#name-selector-btn').on('click', () => {
+function initSocket() {
+    socket = io(banana_split_url);
+
+    socket.on('connect', () => {
+        console.log('Connected to chat server');
+        var current_room = $('#topic-label').text();
+        
+        socket.emit('join-room', {
+            room: current_room,
+            username: db_sender_name
+        });
+        
+        // Load chat history via REST
+        loadChatHistory(current_room);
+    });
+
+    socket.on('new-message', (msg) => {
+        if (msg.username !== db_sender_name) {
+            print_message(msg.message, msg.username, msg.colour || '#888888');
+        }
+    });
+
+    socket.on('error', (err) => {
+        console.error('Socket error:', err);
+    });
+}
+
+function loadChatHistory(room) {
+    axios.get(banana_split_url + '/api/chat/' + encodeURIComponent(room))
+    .then(response => {
+        if (response.data.success && response.data.data) {
+            console.log('Loaded chat history:', response.data.count, 'messages');
+            response.data.data.forEach(msg => {
+                print_message(msg.message, msg.username, msg.colour || '#888888');
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error loading chat history:', error);
+    });
+}
+
+$('#name-selector-btn').on('click', async () => {
     var temp_sender_name = $('#sender-name-input').val();
     var temp_sender_color = $('#sender-color-input').val();
-    if( checkNameAvailability(temp_sender_name) == false || temp_sender_name == ''){
+    var is_available = await checkNameAvailability(temp_sender_name);
+    if( is_available == false || temp_sender_name == ''){
         console.log("invalid name");
         $('#sender-name-input').addClass("is-invalid");
         $('#sender-color-input').addClass("is-valid");
@@ -33,6 +79,7 @@ $('#name-selector-btn').on('click', () => {
         db_sender_color = temp_sender_color;
         $('#name-selector').addClass('d-none');
         $('#chat-input').removeClass('d-none');
+        initSocket();
     }
 });
 
@@ -64,15 +111,16 @@ $('#send-message').on('click', () => {
 /* Sends message to backend and on success prints in frontend
  */
 function send_message(message_text, sender_name, sender_color) {
-    /*TODO outcome must be set to false, set to true for frontend debugging purposes */
-    var outcome = true; //set this to true when backend does return success
-    //backend
-    /* sanitize inputs */
-    /* backend calls */
-
-    //if backend doesnt fail ----> frontend
-    if(outcome == true){
+    if (socket && socket.connected) {
+        socket.emit('send-message', {
+            room: $("#topic-label").text(),
+            username: sender_name,
+            message: message_text,
+            colour: sender_color
+        });
         print_message(message_text, sender_name, sender_color);
+    } else {
+        console.error('Socket not connected');
     }
 }
 
@@ -82,10 +130,16 @@ function print_topic(topic_string){
 
 /* Checks availability of sender_name inside DB
  */
-function checkNameAvailability(sender_name){
-    //if found return true
-    //if not found return false
-    return true;
+async function checkNameAvailability(sender_name) {
+    try {
+        var response = await axios.get(
+            banana_split_url + '/api/chat/username/' + encodeURIComponent(sender_name)
+        );
+        return response.data.available;
+    } catch (error) {
+        console.error('Error checking username:', error);
+        return true;
+    }
 }
 
 /* Prints a message in the DOM, all arguments are required or it won't work
