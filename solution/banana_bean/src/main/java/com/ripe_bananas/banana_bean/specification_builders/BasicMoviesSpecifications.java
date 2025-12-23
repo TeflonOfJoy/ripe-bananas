@@ -1,14 +1,15 @@
 package com.ripe_bananas.banana_bean.specification_builders;
 
+import com.ripe_bananas.banana_bean.entity.BasicMovie;
 import com.ripe_bananas.banana_bean.entity.Genre;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.entity.Poster;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
-public class MoviesSpecifications {
+public class BasicMoviesSpecifications {
 
-  public static Specification<Movie> nameEqualsTo(String name) {
+  public static Specification<BasicMovie> nameEqualsTo(String name) {
     return (root, query, criteriaBuilder) -> {
       if (name != null && !name.isEmpty()) {
         return criteriaBuilder.equal(criteriaBuilder.lower(root.get("name")),
@@ -19,7 +20,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> nameLikeTo(String name) {
+  public static Specification<BasicMovie> nameLikeTo(String name) {
     return (root, query, criteriaBuilder) -> {
       if (name != null && !name.isEmpty()) {
         return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
@@ -30,7 +31,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> yearEqualsTo(Integer year) {
+  public static Specification<BasicMovie> yearEqualsTo(Integer year) {
     return (root, query, criteriaBuilder) -> {
       if (year != null && year > 0) {
         return criteriaBuilder.equal(root.get("date"), year);
@@ -40,7 +41,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> yearGreatThanOrEqual(Integer year){
+  public static Specification<BasicMovie> yearGreatThanOrEqual(Integer year){
     return (root, query, criteriaBuilder) -> {
       if(year != null && year > 0){
         return criteriaBuilder.greaterThanOrEqualTo(root.get("date"), year);
@@ -50,7 +51,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> yearLowerThanOrEqual(Integer year){
+  public static Specification<BasicMovie> yearLowerThanOrEqual(Integer year){
     return (root, query, criteriaBuilder) -> {
       if(year != null && year > 0){
         return criteriaBuilder.lessThanOrEqualTo(root.get("date"), year);
@@ -60,7 +61,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> yearBetween(Integer year_min,
+  public static Specification<BasicMovie> yearBetween(Integer year_min,
                                                  Integer year_max) {
     return (root, query, criteriaBuilder) -> {
       if(year_min != null && year_max != null){
@@ -74,7 +75,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> ratingGreaterThanOrEqual(Float rating){
+  public static Specification<BasicMovie> ratingGreaterThanOrEqual(Float rating){
     return (root, query, criteriaBuilder) -> {
       if(rating != null && rating >= 0){
         return criteriaBuilder.greaterThanOrEqualTo(root.get("rating"), rating);
@@ -84,7 +85,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> ratingLowerThanOrEqual(Float rating){
+  public static Specification<BasicMovie> ratingLowerThanOrEqual(Float rating){
     return (root, query, criteriaBuilder) -> {
       if(rating != null && rating >= 0){
         return criteriaBuilder.lessThanOrEqualTo(root.get("rating"), rating);
@@ -94,7 +95,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> ratingBetween(Float rating_min,
+  public static Specification<BasicMovie> ratingBetween(Float rating_min,
                                                    Float rating_max){
     return (root, query, criteriaBuilder) -> {
       if(rating_min != null && rating_max != null){
@@ -109,7 +110,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> durationGreaterThanOrEqual(Integer duration){
+  public static Specification<BasicMovie> durationGreaterThanOrEqual(Integer duration){
     return (root, query, criteriaBuilder) -> {
       if(duration != null && duration >= 0){
         return criteriaBuilder.greaterThanOrEqualTo(root.get("minute"),
@@ -120,7 +121,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> durationLowerThanOrEqual(Integer duration){
+  public static Specification<BasicMovie> durationLowerThanOrEqual(Integer duration){
     return (root, query, criteriaBuilder) -> {
       if(duration != null && duration >= 0){
         return criteriaBuilder.lessThanOrEqualTo(root.get("minute"), duration);
@@ -130,7 +131,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> durationBetween(Integer duration_min,
+  public static Specification<BasicMovie> durationBetween(Integer duration_min,
                                                      Integer duration_max){
     return (root, query, criteriaBuilder) -> {
       if(duration_min != null && duration_max != null){
@@ -145,7 +146,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> hasGenre(String genre_name){
+  public static Specification<BasicMovie> hasGenre(String genre_name){
     return (root, query, criteriaBuilder) -> {
       if(genre_name != null && !genre_name.isEmpty()){
         Join<Movie, Genre> genre_join = root.join("genres", JoinType.INNER);
@@ -156,7 +157,7 @@ public class MoviesSpecifications {
     };
   }
 
-  public static Specification<Movie> hasPoster(Path<?> movie_id){
+  public static Specification<BasicMovie> hasPoster(Path<?> movie_id){
     return (root, query, criteriaBuilder) -> {
       if(movie_id != null){
         Join<Movie, Poster> poster_join = root.join("poster", JoinType.INNER);
