@@ -7,10 +7,7 @@
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "jest",
-    "aggregate:generate": "node scripts/generate-aggregate.js",
-    "docs:generate": "node scripts/generate-openapi.js",
-    "docs:preview": "bump preview openapi.json",
-    "docs:serve": "swagger-ui-serve openapi.json"
+    "aggregate:generate": "node scripts/generate-aggregate.js"
   },
   "engines": {
     "node": "22.x",
@@ -23,7 +20,15 @@
     "reviews",
     "chat"
   ],
-  "author": "KNG",
+  "author": "Emanuel Nibizi",
+  "contributors": [
+    {
+      "name": "Seriano Kukaj"
+    },
+    {
+      "name": "Stefano Golzio"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
     "compression": "^1.7.4",
@@ -33,7 +38,7 @@
     "express-rate-limit": "^7.1.5",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
-    "mongoose": "^8.0.0",
+    "mongoose": "^8.20.4",
     "socket.io": "^4.7.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"

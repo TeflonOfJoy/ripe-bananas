@@ -23,15 +23,15 @@ class ReviewAggregator {
       await ReviewAggregate.deleteMany({});
       console.log('Cleared existing aggregates');
 
-      const uniqueMovies = await Review.distinct('movie_title');
+      const uniqueMovies = await Review.distinct('movie_id');
       this.totalMovies = uniqueMovies.length;
-      
+
       console.log(`Found ${this.totalMovies} unique movies to process`);
 
-      for (const title of uniqueMovies) {
-        await this.processMovie(title);
+      for (const movieId of uniqueMovies) {
+        await this.processMovie(movieId);
         this.processedMovies++;
-        
+
         if (this.processedMovies % 10 === 0) {
           console.log(
             `Progress: ${this.processedMovies}/${this.totalMovies} ` +
@@ -42,154 +42,134 @@ class ReviewAggregator {
 
       console.timeEnd('Total Aggregation Time');
       console.log(
-        `Aggregation completed! Processed ${this.processedMovies} movies`
+        `Aggregation processed ${this.processedMovies} movies`
       );
-      
+
     } catch (error) {
       console.error('Aggregation failed:', error);
       throw error;
     }
   }
 
-async processMovie(title) {
-  try {
-    const stats = await Review.aggregate([
-      { $match: { movie_title: title } },
-      {
-        $group: {
-          _id: '$movie_title',
-          total_reviews:       { $sum: 1 },
-          positive_reviews:    {
-            $sum: {
-              $cond: [
-                { $in: ['$review_type', ['Fresh','Certified Fresh']] },
-                1,
-                0
-              ]
+  async processMovie(movieId) {
+    try {
+      const stats = await Review.aggregate([
+        { $match: { movie_id: movieId } },
+        {
+          $group: {
+            _id: '$movie_id',
+            movie_title: { $first: '$movie_title' },
+            total_reviews: { $sum: 1 },
+            positive_reviews: {
+              $sum: {
+                $cond: [
+                  { $in: ['$review_type', ['Fresh', 'Certified Fresh']] },
+                  1,
+                  0
+                ]
+              }
+            },
+            top_critic_total: { $sum: { $cond: ['$top_critic', 1, 0] } },
+            top_critic_positive: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      '$top_critic',
+                      { $in: ['$review_type', ['Fresh', 'Certified Fresh']] }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
             }
-          },
-          top_critic_total:    { $sum: { $cond: ['$top_critic', 1, 0] } },
-          top_critic_positive: {
-            $sum: {
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            movie_id: '$_id',
+            movie_title: 1,
+            total_reviews: 1,
+            positive_reviews: 1,
+            top_critic_total: 1,
+            top_critic_positive: 1,
+            bananameter: {
               $cond: [
+                { $gt: ['$total_reviews', 0] },
                 {
-                  $and: [
-                    '$top_critic',
-                    { $in: ['$review_type', ['Fresh','Certified Fresh']] }
+                  $round: [
+                    {
+                      $multiply: [
+                        { $divide: ['$positive_reviews', '$total_reviews'] },
+                        100
+                      ]
+                    },
+                    0
                   ]
                 },
-                1,
                 0
               ]
-            }
-          },
-          audience_total:      { $sum: { $cond: ['$audience_review', 1, 0] } },
-          audience_positive:   {
-            $sum: {
+            },
+            top_critic_score: {
               $cond: [
+                { $gt: ['$top_critic_total', 0] },
                 {
-                  $and: [
-                    '$audience_review',
-                    { $in: ['$review_type', ['Fresh','Certified Fresh']] }
+                  $round: [
+                    {
+                      $multiply: [
+                        {
+                          $divide: [
+                            '$top_critic_positive',
+                            '$top_critic_total'
+                          ]
+                        },
+                        100
+                      ]
+                    },
+                    0
                   ]
                 },
-                1,
                 0
+              ]
+            },
+            last_updated: { $literal: new Date() }
+          }
+        },
+        {
+          $addFields: {
+            certified_fresh: {
+              $and: [
+                { $gte: ['$bananameter', 70] },
+                { $gte: ['$total_reviews', 50] },
+                { $gte: ['$top_critic_total', 5] }
               ]
             }
           }
         }
-      },
-      {
-        $project: {
-          _id: 0,
-          movie_key:'$_id',
-          total_reviews:   1,
-          positive_reviews:1,
-          top_critic_total:1,
-          top_critic_positive:1,
-          audience_total:  1,
-          audience_positive:1,
-          bananameter: {
-            $cond: [
-              { $gt: ['$total_reviews', 0] },
-              { $round: [
-                  { $multiply: [
-                      { $divide: ['$positive_reviews', '$total_reviews'] },
-                      100
-                  ] },
-                  0
-              ] },
-              0
-            ]
-          },
-          top_critic_score: {
-            $cond: [
-              { $gt: ['$top_critic_total', 0] },
-              { $round: [
-                  { $multiply: [
-                      {
-                        $divide: [
-                          '$top_critic_positive',
-                          '$top_critic_total'
-                        ]
-                      },
-                      100
-                  ] },
-                  0
-              ] },
-              0
-            ]
-          },
-          audience_score: {
-            $cond: [
-              { $gt: ['$audience_total', 0] },
-              { $round: [
-                  { $multiply: [
-                      { $divide: ['$audience_positive', '$audience_total'] },
-                      100
-                  ] },
-                  0
-              ] },
-              0
-            ]
-          },
-          last_updated: { $literal: new Date() }
-        }
-      },
-      {
-        $addFields: {
-          certified_fresh: {
-            $and: [
-              { $gte: ['$bananameter', 70] },
-              { $gte: ['$total_reviews', 50] },
-              { $gte: ['$top_critic_total', 5] }
-            ]
-          }
-        }
+      ]);
+
+      if (stats.length === 0) {
+        console.warn(`No stats for movie_id: ${movieId}`);
+        return;
       }
-    ]);
 
-    if (stats.length === 0) {
-      console.warn(`No stats for movie: ${title}`);
-      return;
+      await ReviewAggregate.findOneAndUpdate(
+        { movie_id: movieId },
+        stats[0],
+        { upsert: true, new: true }
+      );
+
+    } catch (error) {
+      console.error(`Error processing movie_id "${movieId}":`, error);
     }
-
-    await ReviewAggregate.findOneAndUpdate(
-      { movie_key: title },
-      stats[0],
-      { upsert: true, new: true }
-    );
-
-  } catch (error) {
-    console.error(`Error processing "${title}":`, error);
   }
-}
 
-  async updateMovieAggregate(title) {
-    console.log(`Updating aggregate for: ${title}`);
-    await this.processMovie(title);
-    console.log(`Updated aggregate for: ${title}`);
+  async updateMovieAggregate(movieId) {
+    console.log(`Updating aggregate for movie_id: ${movieId}`);
+    await this.processMovie(movieId);
+    console.log(`Updated aggregate for movie_id: ${movieId}`);
   }
 
   async refreshAggregates() {
@@ -200,13 +180,13 @@ async processMovie(title) {
 
 async function runAggregation() {
   const aggregator = new ReviewAggregator();
-  
+
   try {
     await aggregator.generateAggregates();
-    console.log('Aggregation script completed successfully!');
+    console.log('Aggregation completed');
     process.exit(0);
   } catch (error) {
-    console.error('Aggregation script failed:', error);
+    console.error('Aggregation failed:', error);
     process.exit(1);
   }
 }
@@ -216,6 +196,6 @@ module.exports = ReviewAggregator;
 if (require.main === module) {
   const command = process.argv[2];
   const title = process.argv[3];
-  
+
   runAggregation();
 }
