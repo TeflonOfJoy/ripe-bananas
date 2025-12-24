@@ -17,7 +17,6 @@ const socketClient = require('socket.io-client');
 const reviewRoutes = require('./routes/review.routes');
 const chatRoutes = require('./routes/chat.routes');
 const movieRoutes = require('./routes/movie.routes');
-const actorRoutes = require('./routes/actor.routes');
 
 const app = express();
 
@@ -134,28 +133,12 @@ chatSocket.on('error', (data) => {
   io.emit('error', data);
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    service: 'Banana Split Router',
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    backends: {
-      mongodb: process.env.BANANA_BREAD_URL,
-      springboot: process.env.BANANA_BEAN_URL
-    }
-  });
-});
-
 // API Routes - Dynamic data (MongoDB via Express)
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/chat', chatRoutes);
 
 // API Routes - Static data (PostgreSQL via Spring Boot)
-app.use('/api/movies', movieRoutes);
-app.use('/api/actors', actorRoutes);
+app.use('/banana_bean/api', movieRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

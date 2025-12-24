@@ -59,14 +59,6 @@ const options = {
             }
           }
         },
-        Error: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean', example: false },
-            message: { type: 'string', example: 'Internal server error' },
-            errors: { type: 'array', items: { type: 'string' } }
-          }
-        },
         ChatMessage: {
           type: 'object',
           properties: {
@@ -76,19 +68,52 @@ const options = {
             colour: { type: 'string' }
           }
         },
-        Movie: {
+        BasicMovie: {
           type: 'object',
           properties: {
-            title: { type: 'string' },
-            year: { type: 'integer' },
-            genre: { type: 'string' }
+            id: { type: 'integer', description: 'Movie ID' },
+            title: { type: 'string', description: 'Movie title' },
+            genres: { type: 'array', items: { type: 'string' }, description: 'List of genres' },
+            year: { type: 'integer', description: 'Release year' },
+            rating: { type: 'number', format: 'float', description: 'Movie rating' },
+            duration: { type: 'integer', description: 'Duration in minutes' }
           }
         },
-        Actor: {
+        PagedMovies: {
           type: 'object',
           properties: {
-            name: { type: 'string' },
-            birthdate: { type: 'string', format: 'date' }
+            content: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/BasicMovie' },
+              description: 'Array of movies'
+            },
+            totalPages: { type: 'integer', description: 'Total number of pages' },
+            totalElements: { type: 'integer', description: 'Total number of movies' },
+            number: { type: 'integer', description: 'Current page number' },
+            size: { type: 'integer', description: 'Page size' }
+          }
+        },
+        Movie: {
+          type: 'object',
+          description: 'Full movie details',
+          properties: {
+            id: { type: 'integer', description: 'Movie ID' },
+            title: { type: 'string', description: 'Movie title' },
+            genres: { type: 'array', items: { type: 'string' }, description: 'List of genres' },
+            year: { type: 'integer', description: 'Release year' },
+            rating: { type: 'number', format: 'float', description: 'Movie rating' },
+            duration: { type: 'integer', description: 'Duration in minutes' },
+            description: { type: 'string', description: 'Movie synopsis' },
+            director: { type: 'string', description: 'Director name' },
+            cast: { type: 'array', items: { type: 'string' }, description: 'List of actors' }
+          }
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: false },
+            message: { type: 'string', example: 'Internal server error' },
+            errors: { type: 'array', items: { type: 'string' } }
           }
         }
       },
@@ -119,8 +144,7 @@ const options = {
     tags: [
       { name: 'Reviews', description: 'Movie review operations (MongoDB)' },
       { name: 'Chat', description: 'Real-time chat functionality (MongoDB)' },
-      { name: 'Movies', description: 'Movie data operations (PostgreSQL)' },
-      { name: 'Actors', description: 'Actor data operations (PostgreSQL)' }
+      { name: 'Movies', description: 'Movie data operations (PostgreSQL)' }
     ]
   },
   apis: ['./routes/*.js']
