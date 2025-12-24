@@ -38,20 +38,9 @@ const chatSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     index: true
-  },
-
-  edited: {
-    type: Boolean,
-    default: false
-  },
-
-  edited_at: {
-    type: Date,
-    default: null
   }
 }, {
-  collection: 'chats',
-  timestamps: true
+  collection: 'chats'
 });
 
 // Compound indexes for efficient queries
@@ -66,9 +55,7 @@ chatSchema.methods.toPublicJSON = function () {
     colour: this.colour,
     username: this.username,
     message: this.message,
-    timestamp: this.timestamp,
-    edited: this.edited,
-    edited_at: this.edited_at
+    timestamp: this.timestamp
   };
 };
 
@@ -80,18 +67,9 @@ chatSchema.statics.getRecentMessages = async function (
   return await this.find({ room })
     .sort({ timestamp: -1 })
     .limit(limit)
-    .select('-__v -createdAt -updatedAt')
+    .select('-__v')
     .lean();
 };
-
-// Pre-save middleware to update timestamp on edit
-chatSchema.pre('save', function (next) {
-  if (this.isModified('message') && !this.isNew) {
-    this.edited = true;
-    this.edited_at = new Date();
-  }
-  next();
-});
 
 const Chat = mongoose.model('Chat', chatSchema);
 

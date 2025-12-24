@@ -19,11 +19,7 @@ class Database {
    */
   async connect() {
     try {
-      const mongoUri = process.env.NODE_ENV === 'test' 
-        ? process.env.MONGODB_TEST_URI 
-        : process.env.MONGODB_URI;
-
-      if (mongoUri === undefined) {
+      if (process.env.MONGODB_URI === undefined) {
         throw new Error('MongoDB URI not provided in environment variables');
       }
 
@@ -35,7 +31,7 @@ class Database {
         bufferCommands: false
       };
 
-      this.connection = await mongoose.connect(mongoUri, options);
+      this.connection = await mongoose.connect(process.env.MONGODB_URI, options);
       
       console.log(`Connected to MongoDB: ${this.connection.connection.name}`);
       
