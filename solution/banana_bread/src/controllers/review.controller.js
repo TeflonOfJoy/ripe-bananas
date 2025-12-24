@@ -9,7 +9,7 @@ const { validationResult } = require('express-validator');
 class ReviewController {
 /**
  * Get reviews for a specific movie
- * GET /api/reviews/movie/:title
+ * GET /api/reviews/movie/:id
  */
 async getMovieReviews(req, res) {
   try {
@@ -21,7 +21,8 @@ async getMovieReviews(req, res) {
       });
     }
 
-    let { title } = req.params;
+    const { id } = req.params;
+    const movieId = parseInt(id);
     const {
       page = 1,
       limit = 20,
@@ -32,17 +33,9 @@ async getMovieReviews(req, res) {
       publisher
     } = req.query;
 
-    // Clean and normalize the movie title
-    title = decodeURIComponent(title).trim();
-    
-    console.log('Searching for movie:', title);
+    console.log('Searching for movie_id:', movieId);
 
-    // Use case-insensitive regex instead of exact match
-    const filter = { 
-      movie_title: new RegExp(`^${escapeRegex(title)}$`, 'i') 
-    };
-    
-    console.log('MongoDB filter:', filter);
+    const filter = { movie_id: movieId };
     
     if (topCritic !== undefined) {
       filter.top_critic = topCritic === 'true';
@@ -75,14 +68,14 @@ async getMovieReviews(req, res) {
         .skip(skip)
         .limit(parseInt(limit))
         .select(
-          'movie_title critic_name top_critic publisher_name ' +
-          'review_type review_score review_date review_content created_at'
+          'movie_id movie_title critic_name top_critic publisher_name ' +
+          'review_type review_score review_date review_content'
         )
         .lean(),
       Review.countDocuments(filter)
     ]);
 
-    console.log(`Found ${reviews.length} reviews for "${title}"`);
+    console.log(`Found ${reviews.length} reviews for movie_id: ${movieId}`);
 
     const totalPages = Math.ceil(totalCount / parseInt(limit));
 
@@ -102,7 +95,7 @@ async getMovieReviews(req, res) {
           per_page: parseInt(limit)
         },
         filters: {
-          movie_title: title,
+          movie_id: movieId,
           top_critic: topCritic,
           review_type: reviewType,
           publisher
@@ -152,28 +145,26 @@ async getReviewById(req, res) {
 
 /**
  * Get aggregated review statistics for a movie
- * GET /api/reviews/movie/:title/stats
+ * GET /api/reviews/movie/:id/stats
  */
 async getMovieReviewStats(req, res) {
   try {
-    let { title } = req.params;
-
-    title = decodeURIComponent(title).trim();
+    const { id } = req.params;
+    const movieId = parseInt(id);
     
-    console.log('Looking for stats for movie:', title);
+    console.log('Looking for stats for movie_id:', movieId);
 
-    let stats = await ReviewAggregate.findOne({ 
-      movie_key: new RegExp(`^${escapeRegex(title)}$`, 'i') 
-    }).lean();
+    let stats = await ReviewAggregate.findOne({ movie_id: movieId }).lean();
 
     if (stats === null) {
       console.log('No precomputed stats found, calculating on-demand...');
       
       const reviewStats = await Review.aggregate([
-        { $match: { movie_title: new RegExp(`^${escapeRegex(title)}$`, 'i') } },
+        { $match: { movie_id: movieId } },
         {
           $group: {
-            _id: '$movie_title', // Keep the original case from DB
+            _id: '$movie_id',
+            movie_title: { $first: '$movie_title' },
             total_reviews: { $sum: 1 },
             fresh_reviews: {
               $sum: {
@@ -210,8 +201,8 @@ async getMovieReviewStats(req, res) {
         const movieStats = reviewStats[0];
         console.log('Calculated stats:', movieStats);
         
-        // Cache the computed stats using the original case from database
-        stats = await ReviewAggregate.updateMovieStats(movieStats._id, {
+        stats = await ReviewAggregate.updateMovieStats(movieId, {
+          movie_title: movieStats.movie_title,
           total_reviews: movieStats.total_reviews,
           positive_reviews: movieStats.fresh_reviews,
           top_critic_total: movieStats.top_critic_total,
@@ -225,14 +216,15 @@ async getMovieReviewStats(req, res) {
     if (stats === null) {
       return res.status(404).json({
         success: false,
-        message: `No reviews found for movie: ${title}`
+        message: `No reviews found for movie_id: ${movieId}`
       });
     }
 
     res.json({
       success: true,
       data: {
-        movie_title: stats.movie_key,
+        movie_id: stats.movie_id,
+        movie_title: stats.movie_title,
         statistics: {
           bananameter: stats.bananameter,
           top_critic_score: stats.top_critic_score,
@@ -339,39 +331,7 @@ async searchReviews(req, res) {
   }
 }
 
-/**
- * Get top rated movies based on aggregates
- * GET /api/reviews/top-rated
- */
-async getTopRated(req, res) {
-  try {
-    const { limit = 20, minReviews = 10 } = req.query;
 
-    const topMovies = await ReviewAggregate.getTopRated(
-      parseInt(limit),
-      parseInt(minReviews)
-    );
-
-    res.json({
-      success: true,
-      data: {
-        top_rated_movies: topMovies.map(movie => ({
-          movie_key: movie.movie_key,
-          bananameter: movie.bananameter,
-          total_reviews: movie.total_reviews,
-          certified_fresh: movie.certified_fresh
-        }))
-      }
-    });
-
-  } catch (error) {
-    console.error('Error fetching top rated movies:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error while fetching top rated movies'
-    });
-  }
-}
 
 /**
  * Create a review

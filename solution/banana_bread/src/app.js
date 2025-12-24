@@ -4,10 +4,7 @@
 
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
 const compression = require('compression');
-const rateLimit = require('express-rate-limit');
 const http = require('http');
 const socketIo = require('socket.io');
 const database = require('./config/database');
@@ -22,42 +19,15 @@ const Chat = require('./models/chat.model');
 const app = express();
 
 // Middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
 
 // Create HTTP server and Socket.IO
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: process.env.CORS_ORIGIN,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    credentials: true
-  }
-});
+const io = socketIo(server);
 
-// CORS configuration
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true
-}));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS),
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS),
-  message: {
-    success: false,
-    message: 'Too many requests, please try again later.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
-});
-
-app.use('/', limiter);
 
 // Logging for development
 if (process.env.NODE_ENV === 'development') {
