@@ -53,11 +53,12 @@ public class Movie {
   private Set<Genre> genres;
 
   @OneToOne
-  @JoinTable(
-    name = "posters",
-    joinColumns = @JoinColumn(name = "id"),
-    inverseJoinColumns = @JoinColumn(name = "id")
-  )
+  //@JoinTable(
+  //  name = "posters",
+  //  joinColumns = @JoinColumn(name = "id"),
+  //  inverseJoinColumns = @JoinColumn(name = "id")
+  //)
+  @JoinColumn(name = "id")
   private Poster poster;
 
   @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)

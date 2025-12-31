@@ -50,10 +50,11 @@ public class BasicMovie {
   private Set<Genre> genres;
 
   @OneToOne
-  @JoinTable(
-    name = "posters",
-    joinColumns = @JoinColumn(name = "id"),
-    inverseJoinColumns = @JoinColumn(name = "id")
-  )
+  //@JoinTable(
+  //  name = "posters",
+  //  joinColumns = @JoinColumn(name = "id"),
+  //  inverseJoinColumns = @JoinColumn(name = "id")
+  //)
+  @JoinColumn(name = "id")
   private Poster poster;
 }
