@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/banana_bean/api")
+@RequestMapping("/api/movies")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -29,7 +29,7 @@ public class MoviesController {
 
   private final MoviesService movies_service;
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Movies", description = "Movies related endpoints")
   @Operation(summary = "Extract a Page of movies matching specific search",
     description = "Select a Page of movies that corresponds to a certain " +
       "search, blank fields be omitted by the search")
@@ -81,7 +81,7 @@ public class MoviesController {
     return ResponseEntity.ok().body(response);
   }
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Movies", description = "Movies related endpoints")
   @Operation(summary = "Given a Movie Id extract all the informations " +
     "regarding that Movie")
   @ApiResponses(value = {
@@ -104,7 +104,7 @@ public class MoviesController {
     return ResponseEntity.ok().body(response);
   }
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Movies", description = "Movies related endpoints")
   @Operation(summary = "Given an Actor Id extract all the movies in which " +
     "that actor appears")
   @ApiResponses(value = {

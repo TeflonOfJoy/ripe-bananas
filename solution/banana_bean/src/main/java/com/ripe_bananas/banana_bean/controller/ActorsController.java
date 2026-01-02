@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/banana_bean/api")
+@RequestMapping("/api/actors")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -25,7 +25,7 @@ public class ActorsController {
 
   public final ActorsService actors_service;
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Actors", description = "Actors related endpoints")
   @Operation(summary = "Extract Actors which name match the given String " +
     "parameter")
   @ApiResponses(value = {
