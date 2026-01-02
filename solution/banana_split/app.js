@@ -14,9 +14,9 @@ const socketIo = require('socket.io');
 const socketClient = require('socket.io-client');
 
 // Route handlers
-const reviewRoutes = require('./routes/review.routes');
-const chatRoutes = require('./routes/chat.routes');
-const movieRoutes = require('./routes/movie.routes');
+const reviewRoutes = require('./src/routes/review.routes');
+const chatRoutes = require('./src/routes/chat.routes');
+const movieRoutes = require('./src/routes/movie.routes');
 
 const app = express();
 
@@ -34,14 +34,14 @@ app.use(compression());
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: process.env.CORS_ORIGIN,
   credentials: true
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS),
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS),
   message: {
     success: false,
     message: 'Too many requests, please try again later.'
@@ -65,14 +65,14 @@ if (process.env.NODE_ENV === 'development') {
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: process.env.CORS_ORIGIN,
     methods: ["GET", "POST"],
     credentials: true
   }
 });
 
 // Connect to backend chat server via Socket.IO
-const chatSocket = socketClient(process.env.BANANA_BREAD_URL || 'http://localhost:3001', {
+const chatSocket = socketClient(process.env.BANANA_BREAD_URL, {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
@@ -163,7 +163,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log('='.repeat(50));
   console.log(`Main Router Server running on port ${PORT}`);
