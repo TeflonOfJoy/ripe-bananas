@@ -7,7 +7,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const MONGODB_SERVER = process.env.BANANA_BREAD_URL || 'http://localhost:3001';
+const MONGODB_SERVER = process.env.BANANA_BREAD_URL;
 
 // Helper function to proxy requests
 const proxyRequest = async (req, res, next) => {

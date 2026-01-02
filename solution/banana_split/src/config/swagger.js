@@ -17,10 +17,10 @@ const options = {
     },
     servers: [
       {
-        url: process.env.CORS_ORIGIN || 'http://localhost:3000',
+        url: process.env.CORS_ORIGIN,
         description: process.env.NODE_ENV === 'development'
-          ? 'Development server'
-          : 'Production server'
+          ? 'Local development'
+          : 'Heroku remote'
       }
     ],
     components: {

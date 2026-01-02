@@ -7,7 +7,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const SPRINGBOOT_SERVER = process.env.BANANA_BEAN_URL || 'http://localhost:8080';
+const SPRINGBOOT_SERVER = process.env.BANANA_BEAN_URL;
 
 // Helper function to proxy requests
 const proxyRequest = async (req, res, next) => {
