@@ -63,6 +63,8 @@ public class MoviesController {
     @RequestParam(required = false) Integer max_duration,
     @Parameter(description = "Sort field for the query")
     @RequestParam(required = false) String sort_by,
+    @Parameter(description = "Sort direction, case insensitive")
+    @RequestParam(required = false) String sort_direction,
     @Parameter(description = "Number of page to retrieve, if > 0 " +
       "retieve the next page of the same search")
     @RequestParam(value = "page_num", defaultValue = "0") int page_num,
@@ -72,9 +74,9 @@ public class MoviesController {
     Page<BasicMovie> response =
       movies_service.findMoviesWithFilters(movie_name, genres, min_rating,
         max_rating, min_year, max_year, min_duration, max_duration, sort_by,
-        page_num, page_size);
+        sort_direction, page_num, page_size);
 
-    if (response == null || response.isEmpty() == true){
+    if (response == null || response.isEmpty() == true) {
       return ResponseEntity.notFound().build();
     }
 
@@ -118,16 +120,21 @@ public class MoviesController {
   public ResponseEntity<Page<BasicMovieProjection>> getMoviesWithActor(
     @Parameter(description = "Id of the actor")
     @RequestParam(value = "actor_id") Integer actor_id,
+    @Parameter(description = "sort field for the query")
+    @RequestParam(required = false) String sort_by,
+    @Parameter(description = "Sort direction, case insensitive")
+    @RequestParam(required = false) String sort_direction,
     @Parameter(description = "Number of page to retrieve, if > 0 " +
       "retrieve the next page of the same search")
     @RequestParam(value = "page_num", defaultValue = "0") int page_num,
     @Parameter(description = "Number of entries per page")
     @RequestParam(value = "page_sz", defaultValue = "25") int page_sz
-  ){
+  ) {
     Page<BasicMovieProjection> response =
-      movies_service.findMoviesWithActor(actor_id, page_num, page_sz);
+      movies_service.findMoviesWithActor(actor_id, sort_by, sort_direction,
+        page_num, page_sz);
 
-    if (response == null || response.isEmpty() == true){
+    if (response == null || response.isEmpty() == true) {
       return ResponseEntity.notFound().build();
     }
 

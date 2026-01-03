@@ -23,6 +23,22 @@ public class MoviesService {
 
   private final BasicMoviesRepo basic_movies_repo;
 
+  private static Sort buildSortBy (String sort_by, String sort_direction){
+    Sort sort;
+    if((sort_by == null || sort_by.isEmpty() == true) ||
+       (sort_direction == null || sort_direction.isEmpty() == true)){
+      return null;
+    } else {
+      if(sort_direction.toLowerCase().equals("desc") == true){
+        sort = Sort.by(Sort.Direction.DESC, sort_by);
+      } else {
+        sort = Sort.by(Sort.Direction.ASC, sort_by);
+      }
+    }
+
+    return sort;
+  }
+
   public Page<BasicMovie> findMoviesWithFilters(String name,
                                                 List<String> genres,
                                                 Float min_rating,
@@ -32,6 +48,7 @@ public class MoviesService {
                                                 Integer min_duration,
                                                 Integer max_duration,
                                                 String sort_by,
+                                                String sort_direction,
                                                 int page_num,
                                                 int page_size) {
     Specification<BasicMovie> specs = BasicMoviesSpecifications.nameLikeTo(name);
@@ -55,10 +72,11 @@ public class MoviesService {
       .and(BasicMoviesSpecifications.durationLowerThanOrEqual(max_duration));
 
     Pageable page;
-    if (sort_by == null || sort_by.isEmpty() == true) {
+    Sort sort = buildSortBy(sort_by, sort_direction);
+    if(sort == null){
       page = PageRequest.of(page_num, page_size);
     } else {
-      page = PageRequest.of(page_num, page_size, Sort.by(sort_by));
+      page = PageRequest.of(page_num, page_size, sort);
     }
 
     Page<BasicMovie> res = basic_movies_repo.findAll(specs, page);
@@ -77,13 +95,22 @@ public class MoviesService {
   }
 
   public Page<BasicMovieProjection> findMoviesWithActor(Integer actor_id,
-                                                 int page_num,
-                                                 int page_size) {
+                                                        String sort_by,
+                                                        String sort_direction,
+                                                        int page_num,
+                                                        int page_size) {
     if (actor_id == null || actor_id <= 0) {
       return null;
     }
 
-    Pageable page = PageRequest.of(page_num, page_size);
+    Pageable page;
+    Sort sort = buildSortBy(sort_by, sort_direction);
+    if(sort == null){
+      page = PageRequest.of(page_num, page_size);
+    } else {
+      page = PageRequest.of(page_num, page_size, sort);
+    }
+
     Page<BasicMovieProjection> movies = movies_repo
       .findMoviesWithActor(actor_id, page);
 
