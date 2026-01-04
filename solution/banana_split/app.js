@@ -17,6 +17,8 @@ const socketClient = require('socket.io-client');
 const reviewRoutes = require('./src/routes/review.routes');
 const chatRoutes = require('./src/routes/chat.routes');
 const movieRoutes = require('./src/routes/movie.routes');
+const actorRoutes = require('./src/routes/actor.routes');
+const genreRoutes = require('./src/routes/genre.routes');
 
 const app = express();
 
@@ -138,7 +140,9 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/chat', chatRoutes);
 
 // API Routes - Static data (PostgreSQL via Spring Boot)
-app.use('/banana_bean/api', movieRoutes);
+app.use('/api/movies', movieRoutes);
+app.use('/api/actors', actorRoutes);
+app.use('/api/genres', genreRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
