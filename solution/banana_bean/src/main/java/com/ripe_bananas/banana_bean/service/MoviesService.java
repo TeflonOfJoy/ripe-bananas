@@ -29,7 +29,7 @@ public class MoviesService {
        (sort_direction == null || sort_direction.isEmpty() == true)){
       return null;
     } else {
-      if(sort_direction.toLowerCase().equals("desc") == true){
+      if(sort_direction.equalsIgnoreCase("desc") == true){
         sort = Sort.by(Sort.Direction.DESC, sort_by);
       } else {
         sort = Sort.by(Sort.Direction.ASC, sort_by);
@@ -95,6 +95,12 @@ public class MoviesService {
   }
 
   public Page<BasicMovieProjection> findMoviesWithActor(Integer actor_id,
+                                                        Float min_rating,
+                                                        Float max_rating,
+                                                        Integer min_year,
+                                                        Integer max_year,
+                                                        Integer min_duration,
+                                                        Integer max_duration,
                                                         String sort_by,
                                                         String sort_direction,
                                                         int page_num,
@@ -102,6 +108,13 @@ public class MoviesService {
     if (actor_id == null || actor_id <= 0) {
       return null;
     }
+
+    min_rating = min_rating == null ? 0.0f : min_rating;
+    max_rating = max_rating == null ? 5.0f : max_rating;
+    min_year = min_year == null ? 1888 : min_year;
+    max_year = max_year == null ? 2025 : max_year;
+    min_duration = min_duration == null ? 0 : min_duration;
+    max_duration = max_duration == null ? Integer.MAX_VALUE : max_duration;
 
     Pageable page;
     Sort sort = buildSortBy(sort_by, sort_direction);
@@ -112,7 +125,8 @@ public class MoviesService {
     }
 
     Page<BasicMovieProjection> movies = movies_repo
-      .findMoviesWithActor(actor_id, page);
+      .findMoviesWithActor(actor_id, min_rating, max_rating, min_year,
+        max_year, min_duration, max_duration, page);
 
     return movies;
   }

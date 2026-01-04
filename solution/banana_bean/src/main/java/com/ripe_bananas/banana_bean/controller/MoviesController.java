@@ -120,6 +120,21 @@ public class MoviesController {
   public ResponseEntity<Page<BasicMovieProjection>> getMoviesWithActor(
     @Parameter(description = "Id of the actor")
     @RequestParam(value = "actor_id") Integer actor_id,
+    @Parameter(description = "Year of release, minimum")
+    @RequestParam(value = "min_year", defaultValue = "") Integer min_year,
+    @Parameter(description = "Year of release, maximum, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Integer max_year,
+    @Parameter(description = "Minimum rating to search")
+    @RequestParam(required = false) Float min_rating,
+    @Parameter(description = "Maximum rating to search, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Float max_rating,
+    @Parameter(description = "Minimum duration to search")
+    @RequestParam(required = false) Integer min_duration,
+    @Parameter(description = "Maximum rating to search, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Integer max_duration,
     @Parameter(description = "sort field for the query")
     @RequestParam(required = false) String sort_by,
     @Parameter(description = "Sort direction, case insensitive")
@@ -131,7 +146,8 @@ public class MoviesController {
     @RequestParam(value = "page_sz", defaultValue = "25") int page_sz
   ) {
     Page<BasicMovieProjection> response =
-      movies_service.findMoviesWithActor(actor_id, sort_by, sort_direction,
+      movies_service.findMoviesWithActor(actor_id, min_rating, max_rating,
+        min_year, max_year, min_duration, max_duration, sort_by, sort_direction,
         page_num, page_sz);
 
     if (response == null || response.isEmpty() == true) {
