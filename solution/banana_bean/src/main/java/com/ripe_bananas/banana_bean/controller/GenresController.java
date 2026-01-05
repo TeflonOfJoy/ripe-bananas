@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/banana_bean/api")
+@RequestMapping("/api/genres")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -28,7 +28,7 @@ public class GenresController {
 
   private final GenresService genres_service;
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Genres", description = "Genres related endpoints")
   @Operation(summary = "Retrieve the list of genres from the Database")
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", content = {@Content(mediaType
