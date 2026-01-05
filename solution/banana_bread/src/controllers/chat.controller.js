@@ -20,7 +20,7 @@ exports.getMessages = async (req, res, next) => {
     const messages = await Chat.find(query)
       .sort({ timestamp: -1 })
       .limit(parseInt(limit))
-      .select('-__v -createdAt -updatedAt')
+      .select('-__v')
       .lean();
 
     res.json({
