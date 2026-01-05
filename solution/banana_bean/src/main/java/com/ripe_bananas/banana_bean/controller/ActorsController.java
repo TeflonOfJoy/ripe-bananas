@@ -1,6 +1,7 @@
 package com.ripe_bananas.banana_bean.controller;
 
 import com.ripe_bananas.banana_bean.entity.Actor;
+import com.ripe_bananas.banana_bean.service.ActorsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/banana_bean/api")
+@RequestMapping("/api/actors")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -24,7 +25,7 @@ public class ActorsController {
 
   public final ActorsService actors_service;
 
-  @Tag(name = "GET", description = "GET methods")
+  @Tag(name = "Actors", description = "Actors related endpoints")
   @Operation(summary = "Extract Actors which name match the given String " +
     "parameter")
   @ApiResponses(value = {
