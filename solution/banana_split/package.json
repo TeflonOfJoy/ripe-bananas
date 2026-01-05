@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "docs:generate": "node scripts/generate-openapi.js",
+    "docs:preview": "bump preview banana_split_openapi.json"
   },
   "engines": {
     "node": "22.x",
@@ -28,9 +30,12 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
     "socket.io": "^4.7.4",
-    "socket.io-client": "^4.7.4"
+    "socket.io-client": "^4.7.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "bump-cli": "^2.9.9",
     "nodemon": "^3.0.2"
   }
 }
