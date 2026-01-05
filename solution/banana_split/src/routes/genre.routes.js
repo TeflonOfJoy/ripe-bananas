@@ -1,13 +1,13 @@
 /**
- * Movie Routes
- * Handles static movie data from PostgreSQL
+ * Genre Routes
+ * Handles static genre data from PostgreSQL
  */
 
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const SPRINGBOOT_SERVER = process.env.SPRINGBOOT_SERVER_URL || 'http://localhost:8080';
+const SPRINGBOOT_SERVER = process.env.BANANA_BEAN_URL;
 
 // Helper function to proxy requests
 const proxyRequest = async (req, res, next) => {
@@ -18,7 +18,6 @@ const proxyRequest = async (req, res, next) => {
       method: req.method,
       url: url,
       data: req.body,
-      params: req.query,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -40,28 +39,4 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-// Get all movies (with pagination)
-router.get('/', proxyRequest);
-
-// Search movies
-router.get('/search', proxyRequest);
-
-// Get movie by ID
-router.get('/:id', proxyRequest);
-
-// Get movie cast
-router.get('/:id/cast', proxyRequest);
-
-// Get movie awards
-router.get('/:id/awards', proxyRequest);
-
-// Create new movie
-router.post('/', proxyRequest);
-
-// Update movie
-router.put('/:id', proxyRequest);
-
-// Delete movie
-router.delete('/:id', proxyRequest);
-
-module.exports = router;
+router.get('/get_genres_list', proxyRequest)
