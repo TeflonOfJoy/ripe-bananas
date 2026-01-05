@@ -1,0 +1,49 @@
+en:
+  # Front page labels
+  course: "Course"
+  course_part: "Course part"
+  lab: "Lab"
+  author: "Author"
+  authors: "Authors"
+  lab_partner: "Lab partner"
+  lab_partners: "Lab partners"
+  lab_supervisor: "Lab supervisor"
+  lab_group: "Lab group"
+  lab_date: "Lab date"
+  
+  # Table of contents
+  outline: "Contents"
+  
+  # Bibliography
+  references: "Bibliography"
+  
+  # Date formatting
+  date_suffix_1: "st"
+  date_suffix_2: "nd"
+  date_suffix_3: "rd"
+  date_suffix_default: "th"
+
+it:
+  # Front page labels
+  course: "Corso"
+  course_part: "Parte del corso"
+  lab: "Laboratorio"
+  author: "Autore"
+  authors: "Autori"
+  lab_partner: "Partner"
+  lab_partners: "Componenti"
+  lab_supervisor: "Supervisore"
+  lab_group: "Gruppo"
+  lab_date: "Data"
+  
+  # Table of contents
+  outline: "Indice"
+  
+  # Bibliography
+  references: "Bibliografia"
+  
+  # Date formatting (Italian doesn't use ordinal suffixes)
+  date_suffix_1: ""
+  date_suffix_2: ""
+  date_suffix_3: ""
+  date_suffix_default: ""
