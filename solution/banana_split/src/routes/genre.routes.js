@@ -39,6 +39,20 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-router.get('/get_genres_list', proxyRequest);
-
-module.exports = router;
+/**
+* @swagger
+* /banana_bean/api/get_genres_list:
+*  get:
+*    tags[Genres]
+*    summary: Given a name of an actor extract all the records that matches the given name
+*     responses:
+*       200:
+*         description: List of genres
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/GenreArray'
+*       404:
+*         description: List of genres not found
+*/
+router.get('/get_genres_list', proxyRequest)

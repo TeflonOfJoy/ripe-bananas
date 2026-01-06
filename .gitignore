@@ -2,3 +2,8 @@ solution/banana_bread/.env
 solution/banana_bread/node_modules
 solution/banana_split/.env
 solution/banana_split/node_modules
+solution/banana_bean/.editorconfig
+solution/banana_bean/.env
+solution/banana_bean/.gradle/
+solution/banana_bean/.idea/
+solution/banana_bean/build/
