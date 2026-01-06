@@ -1,7 +1,6 @@
 package com.ripe_bananas.banana_bean.service;
 
 import com.ripe_bananas.banana_bean.entity.BasicMovie;
-import com.ripe_bananas.banana_bean.entity.BasicMovieProjection;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.repository.BasicMoviesRepo;
 import com.ripe_bananas.banana_bean.repository.MoviesRepo;
@@ -94,7 +93,9 @@ public class MoviesService {
     return response;
   }
 
-  public Page<BasicMovieProjection> findMoviesWithActor(Integer actor_id,
+  public Page<BasicMovie> findMoviesWithActor(Integer actor_id,
+                                                        String name,
+                                                        List<String> genres,
                                                         Float min_rating,
                                                         Float max_rating,
                                                         Integer min_year,
@@ -109,12 +110,28 @@ public class MoviesService {
       return null;
     }
 
-    min_rating = min_rating == null ? 0.0f : min_rating;
-    max_rating = max_rating == null ? 5.0f : max_rating;
-    min_year = min_year == null ? 1888 : min_year;
-    max_year = max_year == null ? 2025 : max_year;
-    min_duration = min_duration == null ? 0 : min_duration;
-    max_duration = max_duration == null ? Integer.MAX_VALUE : max_duration;
+    Specification<BasicMovie> specs = BasicMoviesSpecifications.hasActor(actor_id);
+
+    if (genres != null && genres.isEmpty() == false) {
+      for (String genre : genres) {
+        specs = specs.and(BasicMoviesSpecifications.hasGenre(genre));
+      }
+    }
+
+    specs = specs
+      .and(BasicMoviesSpecifications.nameLikeTo(name));
+    specs = specs
+      .and(BasicMoviesSpecifications.ratingGreaterThanOrEqual(min_rating));
+    specs = specs
+      .and(BasicMoviesSpecifications.ratingLowerThanOrEqual(max_rating));
+    specs = specs
+      .and(BasicMoviesSpecifications.yearGreatThanOrEqual(min_year));
+    specs = specs
+      .and(BasicMoviesSpecifications.yearLowerThanOrEqual(max_year));
+    specs = specs
+      .and(BasicMoviesSpecifications.durationGreaterThanOrEqual(min_duration));
+    specs = specs
+      .and(BasicMoviesSpecifications.durationLowerThanOrEqual(max_duration));
 
     Pageable page;
     Sort sort = buildSortBy(sort_by, sort_direction);
@@ -124,9 +141,8 @@ public class MoviesService {
       page = PageRequest.of(page_num, page_size, sort);
     }
 
-    Page<BasicMovieProjection> movies = movies_repo
-      .findMoviesWithActor(actor_id, min_rating, max_rating, min_year,
-        max_year, min_duration, max_duration, page);
+    Page<BasicMovie> movies = basic_movies_repo
+      .findAll(specs, page);
 
     return movies;
   }
