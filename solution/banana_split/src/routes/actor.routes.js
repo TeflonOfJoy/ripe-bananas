@@ -39,4 +39,6 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-router.get('/get_actors', proxyRequest)
+router.get('/get_actors', proxyRequest);
+
+module.exports = router;

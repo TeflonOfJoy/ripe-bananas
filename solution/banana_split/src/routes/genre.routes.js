@@ -39,4 +39,6 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-router.get('/get_genres_list', proxyRequest)
+router.get('/get_genres_list', proxyRequest);
+
+module.exports = router;
