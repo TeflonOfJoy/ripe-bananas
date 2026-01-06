@@ -56,3 +56,5 @@ const proxyRequest = async (req, res, next) => {
 *         description: List of genres not found
 */
 router.get('/get_genres_list', proxyRequest)
+
+module.exports = router;

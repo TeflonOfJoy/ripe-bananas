@@ -80,3 +80,5 @@ const proxyRequest = async (req, res, next) => {
  *         description: Actor not found
  */
 router.get('/get_actors', proxyRequest)
+
+module.exports = router;
