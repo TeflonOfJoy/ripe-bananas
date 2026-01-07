@@ -19,54 +19,56 @@ class Movie{
   }
 
   get_movie_card() {
-  return `<div class="card movie-card p-0">
-      <img class="w-100 h-auto rounded-top-1"
-          src="${this.poster}">
-      <div class="card-body text-white">
-          <p class="card-title text-truncate h5">${this.title}</p>
-          <p class="mb-1">
-              <i class="fas fa-star text-warning"></i>
-              <span class="small">${fixrating(new String(this.rating))}</span>
-          </p>
-          <p class="text-secondary small mb-0 mobile-hidden">${this.year} • ${this.duration} min</p>
-      </div>
-    </div>`
+    return `<div class="card movie-card p-0">
+        <img class="w-100 h-auto rounded-top-1"
+            src="${this.poster}">
+        <div class="card-body text-white">
+            <p class="card-title text-truncate h5">${this.title}</p>
+            <p class="mb-1">
+                <i class="fas fa-star text-warning"></i>
+                <span class="small text-warning">${this.rating}</span>
+            </p>
+            <p class="text-secondary small mb-0 mobile-hidden">${this.year} • ${this.duration} min</p>
+        </div>
+      </div>`
   }
 
   get_movie_carousel() {
-  return `<div class="carousel-item p-2 ${this.active}">
-      <div class="card m-auto w-100" style="max-width: 586px;">
-        <div class="row g-0">
-          <div class="col-5 mobile-hidden">
-            <img class="rounded-start w-100"
-              src="${this.poster}">
-          </div>
-          <div class="card-body text-white d-flex flex-column col-5">
-            <h3 class="card-title text-capitalize">${this.title}</h3>
-            <p class="card-text text-info">
-              ${this.tagline}
-            </p>
-            <p class="card-text text-secondary line-clamp tablet-hidden mobile-hidden" style="max-height:70%;">
-              ${this.description}
-            </p>
-            <p class="card-text row mt-auto d-none">
-              <span class="col tablet-hidden"><i class="bi bi-star"></i> ${this.rating}</span>
-              <span class="col"><i class="bi bi-clock"></i> ${this.duration}</span>
-              <span class="col"><i class="bi bi-calendar"></i> ${this.year}</span>
-            </p>
+    return `<div class="carousel-item p-2 ${this.active}">
+        <div class="card m-auto w-100" style="max-width: 586px;">
+          <div class="row g-0">
+            <div class="col-5">
+              <img class="rounded-start w-100"
+                src="${this.poster}">
+            </div>
+            <div class="card-body text-white d-flex flex-column col-5">
+              <h3 class="card-title text-capitalize">${this.title}</h3>
+              <p class="card-text text-info truncate">
+                ${this.tagline}
+              </p>
+              <p class="movie-description card-text text-secondary truncate tablet-hidden mobile-hidden" style="max-height:70%;">
+                ${this.description}
+              </p>
+              <p class="card-text text-secondary small mb-0">${this.year} • ${this.duration} min</p>
+              <p class="card-text row mt-auto d-none">
+                <span class="col tablet-hidden"><i class="bi bi-star"></i> ${this.rating}</span>
+                <span class="col"><i class="bi bi-clock"></i> ${this.duration}</span>
+                <span class="col"><i class="bi bi-calendar"></i> ${this.year}</span>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </div>`
-}
+      </div>`
+  }
 }
 
 class Category{
-  constructor(category_name){
+  constructor(category_name, id){
     this.category_name = category_name;
     this.movies = [];
     this.last_idx = 0;
-    this.movies_string = ""
+    this.movies_string = "";
+    this.id = id;
   }
 
   add_movie(movie){
@@ -90,10 +92,10 @@ class Category{
               <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
           </a>
       </h3>
-      <div class="d-flex mb-5 mt-4 movie-card-scroller flex-shrink-0" style="border: 0px solid green">
+      <div id="${this.id}" class="d-flex mb-5 mt-4 movie-card-scroller flex-shrink-0" style="border: 0px solid green">
           ${this.movies_string}
       </div>
-  </section>`
+    </section>`
   }
 
   get_movie_carousel_category() {
@@ -105,8 +107,8 @@ class Category{
           <i class="fas fa-chevron-right pl-2 fa-xs"></i>
         </a>
       </h3>
-      <div class="container row mb-5 mt-4">
-        <div class="carousel slide" data-bs-ride="true" data-bs-interval="100">
+      <div class="container row mb-5 mt-4 m-auto">
+        <div id="${this.id}" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
           <div class="carousel-inner m-auto px-3 container-sm">
             ${this.movies_string}
           </div>

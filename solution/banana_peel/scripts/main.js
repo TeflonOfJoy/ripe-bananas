@@ -1,36 +1,90 @@
-var api_base_address = "https://banana-bean-ef021024f078.herokuapp.com/api/movies/";
+var bean = "https://banana-bean-ef021024f078.herokuapp.com/api/movies/";
+var api_base_address = "https://split-banana-88c30c01daf5.herokuapp.com/";
 
 //Category loader
 var presets = [
     {
         "type" : "carousel",
+        "id" : "top-picks",
         "category_name" : "Top Picks",
-        "call" : "get_movies?max_rating=5&sort_by=rating&sort_direction=desc&page_num=0&page_sz=5"
+        "endpoint" : "api/movies/get_movies",
+        params : {
+            max_rating : 5,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num: 0,
+            page_sz: 5
+        }
     },
     {
         "type" : "card",
+        "id" : "twentieth-century",
         "category_name" : "Best 20th century movies",
-        "call" : "get_movies?max_rating=5&max_year=1999&sort_by=rating&sort_direction=desc&page_num=0&page_sz=15"
+        "endpoint" : "api/movies/get_movies",
+        params : {
+            max_rating : 5,
+            max_year : 1999,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num : 0,
+            page_sz : 15
+        }
     },
     {
         "type" : "card",
+        "id" : "top-rated",
         "category_name" : "Top Rated",
-        "call" : "get_movies?max_rating=5&sort_by=rating&sort_direction=desc&page_num=0&page_sz=15"
+        "endpoint" : "api/movies/get_movies",
+        params : {
+            max_rating : 5,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num : 0,
+            page_sz : 15
+        }
     },
     {
         "type" : "card",
+        "id" : "best-2024",
         "category_name" : "Best of 2024",
-        "call" : "get_movies?min_year=2024&max_year=2024&max_rating=5&sort_by=rating&sort_direction=desc&page_num=0&page_sz=15"
+        "endpoint" : "api/movies/get_movies",
+        params : {
+            min_year : 2024,
+            max_year : 2024,
+            max_rating : 5,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num : 0,
+            page_sz : 15
+        }
     },
     {
         "type" : "card",
+        "id" : "best-malkovich",
         "category_name" : "Best of John Malkovich",
-        "call" : "get_movies_with_actor?actor_id=20664&sort_by=rating&sort_direction=desc&page_num=0&page_sz=15"
+        "endpoint" : "api/movies/get_movies_with_actor",
+        params : {
+            actor_id : 20664,
+            max_rating : 5,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num : 0,
+            page_sz : 15
+        }
     },
     {
         "type" : "card",
+        "id" : "best-gyllenhaal",
         "category_name" : "Best of Jake Gyllenhaal",
-        "call" : "get_movies_with_actor?actor_id=4449&sort_by=rating&sort_direction=desc&page_num=0&page_sz=15"
+        "endpoint" : "api/movies/get_movies_with_actor",
+        params : {
+            actor_id : 4449,
+            max_rating : 5,
+            sort_by : "rating",
+            sort_direction : "desc",
+            page_num : 0,
+            page_sz : 15
+        }
     }
 ];
 
@@ -40,8 +94,8 @@ let sections_left = presets.length;
 $(window).on("load", () => {
     presets.forEach(function(preset, index){
         //console.log(preset.type + "," + preset.category_name + "," + preset.call);
-        let category = new Category(preset.category_name);
-        axios.get(api_base_address + preset.call)
+        let category = new Category(preset.category_name, preset.id);
+        axios.get(api_base_address + preset.endpoint, {params : preset.params})
         .then( response => {
             //console.log(response.data.content);
             let active_index = 1;
@@ -55,11 +109,11 @@ $(window).on("load", () => {
                 }
                 let movie_card = new Movie(movie.name, 
                                             movie.date,
-                                            movie.minute,
-                                            movie.rating,
-                                            movie.poster,
-                                            movie.tagline,
-                                            fixdescription(new String(movie.description)),
+                                            fixnull( new String(movie.minute)),
+                                            fixrating( new String(movie.rating)),
+                                            fixnull( new String(movie.poster)),
+                                            fixnull( new String(movie.tagline)),
+                                            fixnull( new String(movie.description)),
                                             active);
                 let movie_string = movie_card.toString(preset.type);
                 category.add_movie(movie_string);
@@ -67,8 +121,6 @@ $(window).on("load", () => {
             sections[index] = category.toString(preset.type)
             sections_left --;
             print_sections();
-            //$(".main-panel").append(category.toString(preset.type));
-            //console.log(category.toString(preset.type));
         })
         .catch( error => {
             console.log(error);
@@ -78,15 +130,18 @@ $(window).on("load", () => {
 
 function print_sections(){
     if(sections_left == 0){
-        $(".main-panel").append(sections.join(``));
+        $("#page-content").append(sections.join(``));
+        document.querySelectorAll('.carousel').forEach(carousel_element => {
+            new bootstrap.Carousel(carousel_element);
+        });
     }
 }
 
-function fixdescription(description){
-    if(description.length > 381){
-        return description.substring(0, 380) + " ...";
+function fixnull(unfixed_string){
+    if(unfixed_string == "null"){
+        return "-";
     }else{
-        return description;
+        return unfixed_string;
     }
 }
 
