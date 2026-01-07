@@ -41,7 +41,7 @@ const proxyRequest = async (req, res, next) => {
 
 /**
  * @swagger
- * /banana_bean/api/get_movies:
+ * /api/movies/get_movies:
  *   get:
  *     tags: [Movies]
  *     summary: Extract a Page of movies matching specific search
@@ -122,7 +122,7 @@ router.get('/get_movies', proxyRequest);
 
 /**
  * @swagger
- * /banana_bean/api/get_movie_details/{id}:
+ * /api/movies/get_movie_details/{id}:
  *   get:
  *     tags: [Movies]
  *     summary: Given a Movie Id extract all the informations regarding that Movie
@@ -147,7 +147,7 @@ router.get('/get_movie_details/:id', proxyRequest);
 
 /**
  * @swagger
- * /banana_bean/api/get_movies_with_actor:
+ * /api/movies/get_movies_with_actor:
  *   get:
  *     tags: [Movies]
  *     summary: Given an Actor Id extract all the movies in which that actor appears

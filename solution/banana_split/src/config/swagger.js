@@ -144,10 +144,12 @@ const options = {
     tags: [
       { name: 'Reviews', description: 'Movie review operations (MongoDB)' },
       { name: 'Chat', description: 'Real-time chat functionality (MongoDB)' },
-      { name: 'Movies', description: 'Movie data operations (PostgreSQL)' }
+      { name: 'Movies', description: 'Movie data operations (PostgreSQL)' },
+      { name: 'Actors', description: 'Actor data operations (PostgreSQL)' },
+      { name: 'Genres', description: 'Genre data operations (PostgreSQL)' }
     ]
   },
-  apis: ['./routes/*.js']
+  apis: ['./src/routes/*.js']
 };
 
 const specs = swaggerJsdoc(options);

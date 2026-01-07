@@ -41,23 +41,24 @@ const proxyRequest = async (req, res, next) => {
 
 /**
  * @swagger
- * /banana_bean/api/get_actors:
- *  get:
- *    tags[Actors]
- *    summary: Given a name of an actor extract all the records that matches the given name
- *    parameters:
- *      - name: name
- *        in: query
- *        required: false
- *        description: Name of the actor to search
- *        schema:
- *          type: string
- *      - name: sort_by
- *        in: query
- *        description: Sort field for the query
- *        schema:
- *          type: string
- *      - name: page_num
+ * /api/actors/get_actors:
+ *   get:
+ *     tags:
+ *       - Actors
+ *     summary: Given a name of an actor extract all the records that matches the given name
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         description: Name of the actor to search
+ *         schema:
+ *           type: string
+ *       - name: sort_by
+ *         in: query
+ *         description: Sort field for the query
+ *         schema:
+ *           type: string
+ *       - name: page_num
  *         in: query
  *         description: Number of page to retrieve, if > 0 retrieve the next page of the same search
  *         schema:
