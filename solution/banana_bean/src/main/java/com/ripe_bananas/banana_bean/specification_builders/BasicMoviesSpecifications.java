@@ -174,4 +174,17 @@ public class BasicMoviesSpecifications {
     };
   }
 
+  public static Specification<BasicMovie> hasActorName(String actor_name) {
+    return (root, query, criteriaBuilder) -> {
+      if(actor_name != null && actor_name.isEmpty() == false){
+        Join<BasicMovie, MoviesHaveActors> actors = root.join("actors");
+        Join<MoviesHaveActors, Actor> actor = actors.join("actor");
+        return criteriaBuilder.like(criteriaBuilder.lower(actor.get("name")),
+          "%" + actor_name.toLowerCase() + "%");
+      }
+
+      return criteriaBuilder.conjunction();
+    };
+  }
+
 }
