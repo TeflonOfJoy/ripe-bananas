@@ -3,6 +3,7 @@ package com.ripe_bananas.banana_bean.service;
 import com.ripe_bananas.banana_bean.entity.OscarAward;
 import com.ripe_bananas.banana_bean.repository.OscarAwardsRepo;
 import com.ripe_bananas.banana_bean.specification_builders.OscarAwardsSpecifications;
+import com.ripe_bananas.banana_bean.utility.Utility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ public class OscarAwardsService {
                                                     Integer max_ceremony,
                                                     Boolean winner,
                                                     String sort_by,
+                                                    String sort_direction,
                                                     int page_num,
                                                     int page_size) {
     Specification<OscarAward> specs =
@@ -54,10 +56,11 @@ public class OscarAwardsService {
       .and(OscarAwardsSpecifications.winnerEqualsTo(winner));
 
     Pageable page;
-    if (sort_by != null && sort_by.isEmpty() == false) {
-      page = PageRequest.of(page_num, page_size, Sort.by(sort_by));
-    } else {
+    Sort sort = Utility.buildSortBy(sort_by, sort_direction);
+    if (sort == null) {
       page = PageRequest.of(page_num, page_size);
+    } else {
+      page = PageRequest.of(page_num, page_size, sort);
     }
 
     Page<OscarAward> oscar_awards = oscar_repo
