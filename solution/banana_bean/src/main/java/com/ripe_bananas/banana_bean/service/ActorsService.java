@@ -2,6 +2,7 @@ package com.ripe_bananas.banana_bean.service;
 
 import com.ripe_bananas.banana_bean.entity.Actor;
 import com.ripe_bananas.banana_bean.repository.ActorsRepo;
+import com.ripe_bananas.banana_bean.utility.Utility;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -24,14 +25,16 @@ public class ActorsService {
 
   public Page<Actor> searchActorByName(String name,
                                        String sort_by,
+                                       String sort_direction,
                                        int page_num,
                                        int page_size){
     Pageable page;
 
-    if (sort_by != null && sort_by.isEmpty() == false){
-      page = PageRequest.of(page_num, page_size, Sort.by(sort_by));
-    } else {
+    Sort sort = Utility.buildSortBy(sort_by, sort_direction);
+    if (sort == null) {
       page = PageRequest.of(page_num, page_size);
+    } else {
+      page = PageRequest.of(page_num, page_size, sort);
     }
 
     return actors_repo.findByName(name, page);
