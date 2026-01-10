@@ -5,6 +5,7 @@ import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.repository.BasicMoviesRepo;
 import com.ripe_bananas.banana_bean.repository.MoviesRepo;
 import com.ripe_bananas.banana_bean.specification_builders.BasicMoviesSpecifications;
+import com.ripe_bananas.banana_bean.utility.Utility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -21,22 +22,6 @@ public class MoviesService {
   private final MoviesRepo movies_repo;
 
   private final BasicMoviesRepo basic_movies_repo;
-
-  private static Sort buildSortBy(String sort_by, String sort_direction) {
-    Sort sort;
-    if ((sort_by == null || sort_by.isEmpty() == true) ||
-      (sort_direction == null || sort_direction.isEmpty() == true)) {
-      return null;
-    } else {
-      if (sort_direction.equalsIgnoreCase("desc") == true) {
-        sort = Sort.by(Sort.Direction.DESC, sort_by);
-      } else {
-        sort = Sort.by(Sort.Direction.ASC, sort_by);
-      }
-    }
-
-    return sort;
-  }
 
   public Page<BasicMovie> findMoviesWithFilters(String name,
                                                 List<String> genres,
@@ -71,7 +56,7 @@ public class MoviesService {
       .and(BasicMoviesSpecifications.durationLowerThanOrEqual(max_duration));
 
     Pageable page;
-    Sort sort = buildSortBy(sort_by, sort_direction);
+    Sort sort = Utility.buildSortBy(sort_by, sort_direction);
     if (sort == null) {
       page = PageRequest.of(page_num, page_size);
     } else {
@@ -134,7 +119,7 @@ public class MoviesService {
       .and(BasicMoviesSpecifications.durationLowerThanOrEqual(max_duration));
 
     Pageable page;
-    Sort sort = buildSortBy(sort_by, sort_direction);
+    Sort sort = Utility.buildSortBy(sort_by, sort_direction);
     if (sort == null) {
       page = PageRequest.of(page_num, page_size);
     } else {
@@ -184,7 +169,7 @@ public class MoviesService {
       .and(BasicMoviesSpecifications.durationLowerThanOrEqual(max_duration));
 
     Pageable page;
-    Sort sort = buildSortBy(sort_by, sort_direction);
+    Sort sort = Utility.buildSortBy(sort_by, sort_direction);
     if (sort == null) {
       page = PageRequest.of(page_num, page_size);
     } else {
