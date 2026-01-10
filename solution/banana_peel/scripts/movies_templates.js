@@ -1,5 +1,6 @@
 class Movie{
-  constructor(title, year, duration, rating, poster, tagline, description, active){
+  constructor(id, title, year, duration, rating, poster, tagline, description, active){
+    this.id = id;
     this.title = title;
     this.year = year
     this.duration = duration
@@ -13,13 +14,13 @@ class Movie{
   toString(type){
     if(type == "carousel"){
       return this.get_movie_carousel();
-    }else if(type == "card"){
+    }else if(type == "card" || type == "search"){
       return this.get_movie_card();
     }
   }
 
   get_movie_card() {
-    return `<div class="card movie-card p-0">
+    return `<div class="card movie-card p-0 m-1">
         <img class="w-100 h-auto rounded-top-1"
             src="${this.poster}">
         <div class="card-body text-white">
@@ -82,6 +83,8 @@ class Category{
       return this.get_movie_carousel_category();
     }else if(type == "card"){
       return this.get_movie_card_category();
+    }else if (type == "search"){
+      return this.get_movie_search_category();
     }
   }
 
@@ -93,6 +96,20 @@ class Category{
           </a>
       </h3>
       <div id="${this.id}" class="d-flex mb-5 mt-4 movie-card-scroller flex-shrink-0" style="border: 0px solid green">
+          ${this.movies_string}
+      </div>
+    </section>`
+  }
+
+  get_movie_search_category(){
+    //"d-flex mb-5 mt-4 flex-wrap"
+    return `<section class="me-1 ms-1">
+      <h3 class="mb-2">
+          <a href="#!" class="title text-white">
+              <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
+          </a>
+      </h3>
+      <div id="${this.id}" class="d-flex mb-5 mt-4 flex-wrap" style="border: 0px solid green">
           ${this.movies_string}
       </div>
     </section>`
@@ -117,4 +134,3 @@ class Category{
     </section>`
   }
 }
-//style="max-height: fit-content!important;"

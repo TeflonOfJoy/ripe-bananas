@@ -19,12 +19,13 @@ var presets = [
     {
         "type" : "card",
         "id" : "twentieth-century",
-        "category_name" : "Best 20th century movies",
+        "category_name" : "Best of 20th century Sci-Fi",
         "endpoint" : "api/movies/get_movies",
         params : {
             max_rating : 5,
             max_year : 1999,
             sort_by : "rating",
+            genres : "Science Fiction",
             sort_direction : "desc",
             page_num : 0,
             page_sz : 15
@@ -32,28 +33,27 @@ var presets = [
     },
     {
         "type" : "card",
-        "id" : "top-rated",
-        "category_name" : "Top Rated",
+        "id" : "comedy-horror",
+        "category_name" : "Best of Comedy Horror",
         "endpoint" : "api/movies/get_movies",
         params : {
             max_rating : 5,
             sort_by : "rating",
             sort_direction : "desc",
+            min_year : 2005,
+            genres : ["Comedy", "Horror"],
             page_num : 0,
             page_sz : 15
         }
     },
     {
         "type" : "card",
-        "id" : "best-2024",
-        "category_name" : "Best of 2024",
+        "id" : "star-wars",
+        "category_name" : "Star Wars",
         "endpoint" : "api/movies/get_movies",
         params : {
-            min_year : 2024,
-            max_year : 2024,
-            max_rating : 5,
-            sort_by : "rating",
-            sort_direction : "desc",
+            movie_name : "Star Wars:",
+            genres : "Science Fiction",
             page_num : 0,
             page_sz : 15
         }
@@ -107,7 +107,8 @@ $(window).on("load", () => {
                 }else{
                     active = "";
                 }
-                let movie_card = new Movie(movie.name, 
+                let movie_card = new Movie(movie.id,
+                                            movie.name, 
                                             movie.date,
                                             fixnull( new String(movie.minute)),
                                             fixrating( new String(movie.rating)),
@@ -155,4 +156,36 @@ function fixrating(rating){
     }else{
         return rating;
     }
+}
+
+//Search redirection
+$(document).keypress(function(e) {
+    if(e.which != 13) return
+    if($('#main-search-bar').is(':focus') && $('#main-search-bar').val().length > 0){
+        var search_term = $('#main-search-bar').val();
+        redirect_search(search_term);
+    }
+});
+
+function redirect_search(search_term) {
+    var sanitized_term = sanitizeString(search_term);
+    redirect_url("search/#" + sanitized_term);
+}
+
+function redirect_url(new_page){
+    var protocol = window.location.protocol;
+    var hostname = window.location.hostname;
+    var port = window.location.port;
+    var pathname = window.location.pathname;
+    console.log(protocol + "//" + hostname + (port ? ":" + port : "") + pathname + new_page);
+    window.location.href = protocol + "//" + 
+                            hostname + 
+                            (port ? ":" + port : "") + 
+                            pathname + 
+                            new_page;
+}
+
+function sanitizeString(str){
+    str = str.replace(/[^a-z0-9áéíóúñü \.,_-]/gim,"");
+    return str.trim();
 }
