@@ -34,25 +34,52 @@ We divided all the classes in packages for modularity:
  - *controller package:* Containing the Rest Controller endpoints that defines all the parameters accepted by the endpoint and manage the responses
 
 ==== How we connected the Entities to the PostgreSQL tables
-
-==== Error handling
+To represent in SpringBoot the Database we used the `@Entity` JPA annontation in the classes inside the `entity` package and to represent relationships we used the annontations provided by SpringBoot JPA such as `@OneToOne`, `@OneToMany` or `@ManyToMany` after we define all of the tables, fileds and relationships between tables all we need to do is to write custom functions in the repository Interface, or use the default one such as `findAll(Specifications<?> specs, Page<?> page)`, to tell JPA how to extract and how to represents data.
+In some cases we need to write some custom queries with the `@Query()` annotation in a Pseudo-SQL that will be translated in native SQL by JPA and Hybernate, or we could also write native queries (we did not write any of them)
 
 ==== Validation of input parameters
+for validating the imput parameters we flagged the required ones in the endpoint function signature via the `@RequestParam()` annotation and in the Service classes we check if that parameters respect a certain format, for example:
+ - *IDs:* not lower or equal than 0 (for the movies endpoint we check for numbers above 1000000)
+ - *Names and other reque Strings: * we check if are not `null` or empty, but in this case instead of returning null we treat the search as the user want to extract arbitrary records of that table
+
+for all the other parameters we check if they are null or not when we try to build the Specifications and if we encounter a null or an empty string we return a `conjuction()` which is a where clause that it is always `true` to prevent query errors and to make the API calls much more simple
+
+==== How we managed the responses
+All of the responses uses a Pagination System with the `Page<?>` class to prevent a search that returns thousand of records and slow down the API, so instead we load a number of entries per page and send it to the frontend, if the frontend need the next page it can use the same API call but with the paramenter `page_num` incremented by 1.
+The `Page<?>` class responds with a list of the requested type (`Movie`, `Actor` or `OscarAward`) in the `content` field, in the same level you can find varius information about the page, such as `total_elements` and `total_pages` useful for the frontend to manage the pagination.
+
+For Json serialization SpringBoot Web uses Jackson to convert a java object into a Json structure, so after we finished the rappresentation of the db inside SpringBoot we started to develop the `/get_movie_details` endpoint and we put the `@JsonIgnore` annotation in all of the fileds we didn't want inside the json response, however this created a little problem with the other enfpoints that we will discuss later in the report.
 
 ==== DTOs usage
+We used DTOs just once in our project, to retrieve the genres list, this is because in the `Genre` class there is the annotation `@JsonIgnore` next to the genre id to prevent the id to be displayed in the get_movie_details Json response
 
 == Issues
+During our journey into SpringBoot Web development we've encountered one major issue that lead us to 2 possible solutions
+The issue was that if we asked for a page of movies the application will take all of the fileds inside the `Movie` class and return the Page, this was unacceptable because it produced a massive Json response that was heavy to parse and not optimal, because if we wanted to search a bunch of films we want to load the details after we identify the movie that the user want
 
-=== DTOs issue
+=== DTOs solution (not the one we used)
+The fisrt solution we adopted was to create custom DTOs for the responses so that the response of the enpoints of `/get_movies` and `get_movies_with_actor` was only part of the fileds in the Movie class.
+But this solution lead to another problem, because we need to seralize ourself the data into the DTO we lost the functionality of pagination so we needed a much better solution
 
-=== Entities issue
+=== Double Entities solution (the one we used)
+this solution was to create another Entity called `BasicMovie` that contained only the basic informations about the movies, with this solution we could preserve the pagination and also we could reduce some of the work server side because the `BasicMovie` class did not have all of the relationships between all of the tables in the Database
 
 == Requirements
 
 === System Requirements
+We adopted the java 21 version because it is a newer version of java similar to the one we used in other courses.
+For the build system we used Gradle
 
-=== Necessary SpringBoot configuration
+=== Necessary SpringBoot configurations
+SpringBoot manage the properties in a file inside the resource package called `application.properties` in which are specfied:
+ - Database connection URL
+ - Database username
+ - Database password
+ - OpenAPI paths
+ - JPA parameters (such as lazy loading and other features)
+ - add or remove debug prints
+
+the first three voices are not directly inside the file but are stored inside a `.env` file stored locally by every member of the team for privacy resons, this file is hosted on gitlab so everyone could see the username, password and database name and also avoid editing the file every time we need to deploy to heroku, with this solution we just need to create Enviroment variables inside the heroku dashboard.
 
 == Limitations
-
-=== JPA Limitations
+SpringBoot like other frameworks offers a lot of features but at the same time it give you a standard that you must follow and if you need to go beyond that stantard you have to fight the framework to do the thinghs you want or develop some workarounds, just like we did wuth the issue we've encountered, however if you want to make from scratch an application like this without using SpringBoot you end up to write an insane amount of code and at that point it is much faster to work with SpringBoot and after some time you start to bear all the quirks and limitations it has.
