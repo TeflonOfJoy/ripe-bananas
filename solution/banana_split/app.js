@@ -19,6 +19,7 @@ const chatRoutes = require('./src/routes/chat.routes');
 const movieRoutes = require('./src/routes/movie.routes');
 const actorRoutes = require('./src/routes/actor.routes');
 const genreRoutes = require('./src/routes/genre.routes');
+const oscarRoutes = require('./src/routes/oscar.routes');
 
 const app = express();
 
@@ -143,6 +144,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/actors', actorRoutes);
 app.use('/api/genres', genreRoutes);
+app.use('/api/oscars', oscarRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

@@ -182,4 +182,42 @@ router.get('/get_movie_details/:id', proxyRequest);
  */
 router.get('/get_movies_with_actor', proxyRequest);
 
+
+/**
+ * @swagger
+ * /api/movies/get_movies_with_actor:
+ *   get:
+ *     tags: [Movies]
+ *     summary: Given an Actor Name extract all the movies in which that actor appears
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: true
+ *         description: Name of the actor
+ *         schema:
+ *           type: string
+ *       - name: page_num
+ *         in: query
+ *         description: Number of page to retrieve, if > 0 retrieve the next page of the same search
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *       - name: page_sz
+ *         in: query
+ *         description: Number of entries per page
+ *         schema:
+ *           type: integer
+ *           default: 25
+ *     responses:
+ *       200:
+ *         description: Page of movies featuring the actor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PagedMovies'
+ *       404:
+ *         description: Movies not found
+ */
+router.get('/get_movies_with_actor_name', proxyRequest)
+
 module.exports = router;
