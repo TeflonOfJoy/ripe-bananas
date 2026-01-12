@@ -43,7 +43,7 @@ const proxyRequest = async (req, res, next) => {
  * @swagger
  * /api/movies/get_movies:
  *   get:
- *     tags: [Oscar Awards]
+ *     tags: [Oscars]
  *     summary: Extract a Page of Oscar Awards matching specific search
  *     description: Select a Page of Oscar Awards that corresponds to a certain search, blank fields be omitted by the search
  *     parameters:
@@ -127,7 +127,7 @@ const proxyRequest = async (req, res, next) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PagedOscarAward'
+ *               $ref: '#/components/schemas/PagedOscar'
  *       404:
  *         description: Movies not found
  */

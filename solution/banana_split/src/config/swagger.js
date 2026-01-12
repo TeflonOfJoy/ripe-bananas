@@ -146,7 +146,8 @@ const options = {
       { name: 'Chat', description: 'Real-time chat functionality (MongoDB)' },
       { name: 'Movies', description: 'Movie data operations (PostgreSQL)' },
       { name: 'Actors', description: 'Actor data operations (PostgreSQL)' },
-      { name: 'Genres', description: 'Genre data operations (PostgreSQL)' }
+      { name: 'Genres', description: 'Genre data operations (PostgreSQL)' },
+      { name: 'Oscars', description: 'Oscar data operations (PostgreSQL)' }
     ]
   },
   apis: ['./src/routes/*.js']
