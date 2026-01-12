@@ -28,6 +28,8 @@ For the implementations, we used the basic data types PostgreSQL offers:
  - *Text:* for strings such as `description` and `tagline` because we do not know the dimension of the description or tagline of a movie, and we can not assume that it remains under `999` characters.
  - *Date:* for the dates, for example, in the `releases` table.
  - *Boolean:* used in the `oscar_awards` table to differentiate the nominees from the actual winner (false only nominated, true winner).
+
+#figure(image("../img/banana_stem_structure.png"))
  
 == Issues
 === Missing Indexes
