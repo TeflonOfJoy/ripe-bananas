@@ -24,13 +24,13 @@
 #include "src/chapters/3-nodejs.typ"
 #pagebreak(weak: true)
 
+#include "src/chapters/3.5-express.typ"
+#pagebreak(weak: true)
+
 #include "src/chapters/4-mongodb.typ"
 #pagebreak(weak: true)
 
 #include "src/chapters/5-springboot.typ"
-#pagebreak(weak: true)
-
-#include "src/chapters/6-jpa.typ"
 #pagebreak(weak: true)
 
 #include "src/chapters/7-conclusions.typ"
