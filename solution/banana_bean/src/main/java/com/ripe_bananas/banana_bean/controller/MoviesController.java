@@ -1,7 +1,6 @@
 package com.ripe_bananas.banana_bean.controller;
 
 import com.ripe_bananas.banana_bean.entity.BasicMovie;
-import com.ripe_bananas.banana_bean.entity.BasicMovieProjection;
 import com.ripe_bananas.banana_bean.entity.Movie;
 import com.ripe_bananas.banana_bean.service.MoviesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,14 +111,18 @@ public class MoviesController {
   @ApiResponses(value = {
     @ApiResponse(responseCode = "200", content = {@Content(mediaType
       = "application/json",
-      schema = @Schema(implementation = BasicMovieProjection.class))}),
+      schema = @Schema(implementation = BasicMovie.class))}),
     @ApiResponse(responseCode = "404", description = "Movies not " +
       "found", content = @Content)
   })
   @GetMapping("/get_movies_with_actor")
-  public ResponseEntity<Page<BasicMovieProjection>> getMoviesWithActor(
+  public ResponseEntity<Page<BasicMovie>> getMoviesWithActor(
     @Parameter(description = "Id of the actor")
     @RequestParam(value = "actor_id") Integer actor_id,
+    @Parameter(description = "Name of the movie")
+    @RequestParam(required = false) String movie_name,
+    @Parameter(description = "list of genres to search the movie with")
+    @RequestParam(required = false) List<String> genres,
     @Parameter(description = "Year of release, minimum")
     @RequestParam(value = "min_year", defaultValue = "") Integer min_year,
     @Parameter(description = "Year of release, maximum, leave blank if not " +
@@ -145,10 +148,65 @@ public class MoviesController {
     @Parameter(description = "Number of entries per page")
     @RequestParam(value = "page_sz", defaultValue = "25") int page_sz
   ) {
-    Page<BasicMovieProjection> response =
-      movies_service.findMoviesWithActor(actor_id, min_rating, max_rating,
-        min_year, max_year, min_duration, max_duration, sort_by, sort_direction,
-        page_num, page_sz);
+    Page<BasicMovie> response =
+      movies_service.findMoviesWithActorId(actor_id, movie_name, genres, min_rating,
+        max_rating, min_year, max_year, min_duration, max_duration, sort_by,
+        sort_direction, page_num, page_sz);
+
+    if (response == null || response.isEmpty() == true) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok().body(response);
+  }
+
+  @Tag(name = "Movies", description = "Movies related endpoints")
+  @Operation(summary = "Given an Actor Name extract all the movies in which " +
+    "that actor appears [WARNING] the name will be put in like condition")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", content = {@Content(mediaType
+      = "application/json",
+      schema = @Schema(implementation = BasicMovie.class))}),
+    @ApiResponse(responseCode = "404", description = "Movies not " +
+      "found", content = @Content)
+  })
+  @GetMapping("/get_movies_with_actor_name")
+  public ResponseEntity<Page<BasicMovie>> getMoviesWithActorName(
+    @Parameter(description = "name of the actor")
+    @RequestParam(required = false) String actor_name,
+    @Parameter(description = "Name of the movie")
+    @RequestParam(required = false) String movie_name,
+    @Parameter(description = "list of genres to search the movie with")
+    @RequestParam(required = false) List<String> genres,
+    @Parameter(description = "Year of release, minimum")
+    @RequestParam(value = "min_year", defaultValue = "") Integer min_year,
+    @Parameter(description = "Year of release, maximum, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Integer max_year,
+    @Parameter(description = "Minimum rating to search")
+    @RequestParam(required = false) Float min_rating,
+    @Parameter(description = "Maximum rating to search, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Float max_rating,
+    @Parameter(description = "Minimum duration to search")
+    @RequestParam(required = false) Integer min_duration,
+    @Parameter(description = "Maximum rating to search, leave blank if not " +
+      "needed")
+    @RequestParam(required = false) Integer max_duration,
+    @Parameter(description = "sort field for the query")
+    @RequestParam(required = false) String sort_by,
+    @Parameter(description = "Sort direction, case insensitive")
+    @RequestParam(required = false) String sort_direction,
+    @Parameter(description = "Number of page to retrieve, if > 0 " +
+      "retrieve the next page of the same search")
+    @RequestParam(value = "page_num", defaultValue = "0") int page_num,
+    @Parameter(description = "Number of entries per page")
+    @RequestParam(value = "page_sz", defaultValue = "25") int page_sz
+  ) {
+    Page<BasicMovie> response =
+      movies_service.findMoviesWithActorName(actor_name, movie_name, genres, min_rating,
+        max_rating, min_year, max_year, min_duration, max_duration, sort_by,
+        sort_direction, page_num, page_sz);
 
     if (response == null || response.isEmpty() == true) {
       return ResponseEntity.notFound().build();

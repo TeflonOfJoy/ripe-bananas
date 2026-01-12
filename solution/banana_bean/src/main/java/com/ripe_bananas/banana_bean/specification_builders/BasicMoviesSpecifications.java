@@ -1,9 +1,6 @@
 package com.ripe_bananas.banana_bean.specification_builders;
 
-import com.ripe_bananas.banana_bean.entity.BasicMovie;
-import com.ripe_bananas.banana_bean.entity.Genre;
-import com.ripe_bananas.banana_bean.entity.Movie;
-import com.ripe_bananas.banana_bean.entity.Poster;
+import com.ripe_bananas.banana_bean.entity.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -162,6 +159,28 @@ public class BasicMoviesSpecifications {
       if(movie_id != null){
         Join<Movie, Poster> poster_join = root.join("poster", JoinType.INNER);
         return criteriaBuilder.equal(poster_join.get("id"), movie_id);
+      }
+
+      return criteriaBuilder.conjunction();
+    };
+  }
+
+  public static Specification<BasicMovie> hasActor(Integer actor_id) {
+    return (root, query, cb) -> {
+      if (actor_id == null) return cb.conjunction();
+      Join<BasicMovie, MoviesHaveActors> actors = root.join("actors");
+      Join<MoviesHaveActors, Actor> actor = actors.join("actor");
+      return cb.equal(actor.get("id"), actor_id);
+    };
+  }
+
+  public static Specification<BasicMovie> hasActorName(String actor_name) {
+    return (root, query, criteriaBuilder) -> {
+      if(actor_name != null && actor_name.isEmpty() == false){
+        Join<BasicMovie, MoviesHaveActors> actors = root.join("actors");
+        Join<MoviesHaveActors, Actor> actor = actors.join("actor");
+        return criteriaBuilder.like(criteriaBuilder.lower(actor.get("name")),
+          "%" + actor_name.toLowerCase() + "%");
       }
 
       return criteriaBuilder.conjunction();
