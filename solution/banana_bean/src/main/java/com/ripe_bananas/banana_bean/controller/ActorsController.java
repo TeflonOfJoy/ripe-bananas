@@ -41,13 +41,16 @@ public class ActorsController {
     @RequestParam(required = false) String name,
     @Parameter(description = "Sort field for the query")
     @RequestParam(required = false) String sort_by,
+    @Parameter(description = "Sort direction, case insensitive")
+    @RequestParam(required = false) String sort_direction,
     @Parameter(description = "Number of page to retrieve, if > 0 " +
       "retieve the next page of the same search")
     @RequestParam(value = "page_num", defaultValue = "0") int page_num,
     @Parameter(description = "Number of entries per page")
     @RequestParam(value = "page_sz", defaultValue = "25") int page_size
     ){
-    Page<Actor> response = actors_service.searchActorByName(name, sort_by, page_num,
+    Page<Actor> response = actors_service.searchActorByName(name, sort_by, sort_direction,
+      page_num,
       page_size);
 
     if (response == null || response.isEmpty() == true){

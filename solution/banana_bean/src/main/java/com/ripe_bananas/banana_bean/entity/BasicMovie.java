@@ -1,5 +1,6 @@
 package com.ripe_bananas.banana_bean.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,4 +53,8 @@ public class BasicMovie {
   @OneToOne
   @JoinColumn(name = "id")
   private Poster poster;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<MoviesHaveActors> actors;
 }
