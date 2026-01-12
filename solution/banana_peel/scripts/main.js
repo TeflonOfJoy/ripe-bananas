@@ -1,6 +1,3 @@
-var bean = "https://banana-bean-ef021024f078.herokuapp.com/api/movies/";
-var api_base_address = "https://split-banana-88c30c01daf5.herokuapp.com/";
-
 //Category loader
 var presets = [
     {
@@ -95,7 +92,7 @@ $(window).on("load", () => {
     presets.forEach(function(preset, index){
         //console.log(preset.type + "," + preset.category_name + "," + preset.call);
         let category = new Category(preset.category_name, preset.id);
-        axios.get(api_base_address + preset.endpoint, {params : preset.params})
+        axios.get(_api_base_address + preset.endpoint, {params : preset.params})
         .then( response => {
             //console.log(response.data.content);
             let active_index = 1;
@@ -138,54 +135,33 @@ function print_sections(){
     }
 }
 
-function fixnull(unfixed_string){
-    if(unfixed_string == "null"){
-        return "-";
-    }else{
-        return unfixed_string;
-    }
-}
-
-function fixrating(rating){
-    if(rating == "null"){
-        return "-";
-    }else if(rating.length == 1){
-        return rating + ".0"
-    }else if(rating.length > 3){
-        return rating.substring(0,3);
-    }else{
-        return rating;
-    }
-}
-
 //Search redirection
 $(document).keypress(function(e) {
     if(e.which != 13) return
-    if($('#main-search-bar').is(':focus') && $('#main-search-bar').val().length > 0){
-        var search_term = $('#main-search-bar').val();
-        redirect_search(search_term);
-    }
+    /*if($('#main-search-bar').is(':focus') && $('#main-search-bar').val().length > 0){
+        var search = get_search_values();
+        console.log("#" + search.type + "/" + search.term);
+        //redirect_search(search_term);
+    }*/
 });
 
+$('#main-search-button').on('click', () => {
+    //If #main-search-bar is focused and user presses ENTER, it triggers like a click
+    if($('#main-search-bar').val().length > 0){
+        var search = get_search_values();
+        var search_hash = "/" + search.type + "/" + search.term;
+        redirect_search(search_hash);
+    }
+    return;
+});
+
+function get_search_values(){
+    return {
+        term : $('#main-search-bar').val(),
+        type : $('#search-type').val()
+    };
+}
+
 function redirect_search(search_term) {
-    var sanitized_term = sanitizeString(search_term);
-    redirect_url("search/#" + sanitized_term);
-}
-
-function redirect_url(new_page){
-    var protocol = window.location.protocol;
-    var hostname = window.location.hostname;
-    var port = window.location.port;
-    var pathname = window.location.pathname;
-    console.log(protocol + "//" + hostname + (port ? ":" + port : "") + pathname + new_page);
-    window.location.href = protocol + "//" + 
-                            hostname + 
-                            (port ? ":" + port : "") + 
-                            pathname + 
-                            new_page;
-}
-
-function sanitizeString(str){
-    str = str.replace(/[^a-z0-9áéíóúñü \.,_-]/gim,"");
-    return str.trim();
+    redirect_url("search/#" + search_term);
 }

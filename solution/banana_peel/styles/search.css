@@ -1,5 +1,5 @@
 /* HTML: <div class="loader-factory"></div> */
-.loader-wrapper{
+.loader-wrapper {
     height: 500px;
 }
 
@@ -48,5 +48,49 @@
     0%,
     50% {
         transform: translateY(-80px)
+    }
+}
+
+.search-results {
+    margin: -.5rem;
+}
+
+.movie-card {
+    margin: .25rem;
+}
+
+@media only screen and (max-width: 770px) {
+    .search-results {
+        margin: 0;
+    }
+
+    .movie-card {
+        margin: .25rem;
+        width: calc((100% / 3) - .5rem) !important;
+    }
+
+    .movie-card .card-title {
+        font-size: .9em;
+    }
+
+    .movie-card .card-body p span {
+        font-size: .7em;
+    }
+
+    .line-clamp {
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+    }
+}
+
+@media only screen and (min-width: 770px) and (max-width: 1224px) {
+    .movie-card {
+        width: calc((100% / 5) - .5rem) !important;
+    }
+}
+
+@media only screen and (min-width : 1224px) {
+    .movie-card {
+        width: calc((100% / 7) - .5rem) !important;
     }
 }

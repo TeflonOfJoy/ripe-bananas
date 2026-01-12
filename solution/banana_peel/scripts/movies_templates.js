@@ -20,7 +20,7 @@ class Movie{
   }
 
   get_movie_card() {
-    return `<div class="card movie-card p-0 m-1">
+    return `<div class="card movie-card p-0">
         <img class="w-100 h-auto rounded-top-1"
             src="${this.poster}">
         <div class="card-body text-white">
@@ -66,14 +66,15 @@ class Movie{
 class Category{
   constructor(category_name, id){
     this.category_name = category_name;
-    this.movies = [];
+    this.movies = new Array();
     this.last_idx = 0;
     this.movies_string = "";
     this.id = id;
   }
 
   add_movie(movie){
-    this.movies[this.last_idx] = movie;
+    //this.movies[this.last_idx] = movie;
+    this.movies.push(movie);
     this.last_idx ++;
   }
 
@@ -95,7 +96,7 @@ class Category{
               <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
           </a>
       </h3>
-      <div id="${this.id}" class="d-flex mb-5 mt-4 movie-card-scroller flex-shrink-0" style="border: 0px solid green">
+      <div id="${this.id}" class="d-flex mb-5 mt-4 movie-card-scroller flex-shrink-0">
           ${this.movies_string}
       </div>
     </section>`
@@ -109,8 +110,10 @@ class Category{
               <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
           </a>
       </h3>
-      <div id="${this.id}" class="d-flex mb-5 mt-4 flex-wrap" style="border: 0px solid green">
-          ${this.movies_string}
+      <div class="m-auto w-100">
+        <div id="${this.id}" class="search-results d-flex mb-5 mt-4 flex-wrap m-auto justify-content-start">
+            ${this.movies_string}
+        </div>
       </div>
     </section>`
   }
