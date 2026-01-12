@@ -1,23 +1,23 @@
 /**
- * Chat Routes
- * Handles chat message history
+ * Actor Routes
+ * Handles static actor data from PostgreSQL
  */
 
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const MONGODB_SERVER = process.env.MONGODB_SERVER_URL || 'http://localhost:3001';
+const SPRINGBOOT_SERVER = process.env.BANANA_BEAN_URL;
 
 // Helper function to proxy requests
 const proxyRequest = async (req, res, next) => {
   try {
-    const url = `${MONGODB_SERVER}${req.originalUrl}`;
+    const url = `${SPRINGBOOT_SERVER}${req.originalUrl}`;
 
     const response = await axios({
       method: req.method,
       url: url,
-      params: req.query,
+      data: req.body,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -31,7 +31,7 @@ const proxyRequest = async (req, res, next) => {
     } else if (error.request) {
       res.status(503).json({
         success: false,
-        message: 'Chat service unavailable'
+        message: 'Spring Boot service unavailable'
       });
     } else {
       next(error);
@@ -39,10 +39,4 @@ const proxyRequest = async (req, res, next) => {
   }
 };
 
-// Check username availability
-router.get('/username/:username', proxyRequest);
-
-// Get message history for a room
-router.get('/:room', proxyRequest);
-
-module.exports = router;
+router.get('/get_actors', proxyRequest)
