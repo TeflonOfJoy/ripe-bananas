@@ -30,6 +30,9 @@
 #include "src/chapters/4-mongodb.typ"
 #pagebreak(weak: true)
 
+#include "src/chapters/4.5-postgresql.typ"
+#pagebreak(weak: true)
+
 #include "src/chapters/5-springboot.typ"
 #pagebreak(weak: true)
 
