@@ -4,6 +4,8 @@ import com.ripe_bananas.banana_bean.entity.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class BasicMoviesSpecifications {
 
   public static Specification<BasicMovie> nameEqualsTo(String name) {
@@ -143,11 +145,11 @@ public class BasicMoviesSpecifications {
     };
   }
 
-  public static Specification<BasicMovie> hasGenre(String genre_name){
+  public static Specification<BasicMovie> hasGenre(List<String> genres){
     return (root, query, criteriaBuilder) -> {
-      if(genre_name != null && !genre_name.isEmpty()){
-        Join<Movie, Genre> genre_join = root.join("genres", JoinType.INNER);
-        return criteriaBuilder.equal(genre_join.get("genre_name"), genre_name);
+      if(genres != null && !genres.isEmpty()){
+        Join<BasicMovie, Genre> genre_join = root.join("genres", JoinType.INNER);
+        return genre_join.get("genre_name").in(genres);
       }
 
       return criteriaBuilder.conjunction();
@@ -157,7 +159,7 @@ public class BasicMoviesSpecifications {
   public static Specification<BasicMovie> hasPoster(Path<?> movie_id){
     return (root, query, criteriaBuilder) -> {
       if(movie_id != null){
-        Join<Movie, Poster> poster_join = root.join("poster", JoinType.INNER);
+        Join<BasicMovie, Poster> poster_join = root.join("poster", JoinType.INNER);
         return criteriaBuilder.equal(poster_join.get("id"), movie_id);
       }
 
