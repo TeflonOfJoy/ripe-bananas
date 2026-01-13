@@ -40,6 +40,15 @@ body::before {
   scroll-snap-align: start;
 }
 
+.movie-card, .movie-card-carousel {
+  border: 2px solid rgba(0, 0, 0, 0);
+  transition: border-color .5s ease-in-out;
+}
+
+.movie-card:hover, .movie-card-carousel:hover{
+  border: 2px solid rgb(var(--bs-warning-rgb))!important;
+}
+
 .movie-card .card-title {
   font-size: 1em;
 }
@@ -77,6 +86,10 @@ body::before {
 
 .movie-description.truncate {
   -webkit-line-clamp: var(--line-clamp, 7) !important;
+}
+
+.movie-details-description.truncate{
+  -webkit-line-clamp: var(--line-clamp, 8) !important;
 }
 
 .line-clamp {

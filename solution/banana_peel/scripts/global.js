@@ -8,6 +8,11 @@ function fixnull(unfixed_string){
     }
 }
 
+function fixdate(date){
+    var fixed_date = new Date(date);
+    return fixed_date;
+}
+
 function fixrating(rating){
     if(rating == "null"){
         return "-";
