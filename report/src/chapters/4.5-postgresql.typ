@@ -32,10 +32,11 @@ For the implementations, we used the basic data types PostgreSQL offers:
 #figure(image("../img/banana_stem_structure.png"))
  
 == Issues
-=== Missing Indexes
-While primary keys automatically create indexes, the database schema doesn't show explicit indexes on frequently queried foreign key columns, which could impact query performance on large datasets.
+We did not encounter any issues with the Design and the usage of the database, also because we queried the Database with a Paging system to prevent long queries.
 
 == Requirements
 We adopted PostgreSQL version 18, the latest available when we started the project.
 
 == Limitations
+=== Missing Indexes
+While primary keys automatically create indexes, the database schema doesn't show explicit indexes on frequently queried foreign key columns, which could impact query performance on large datasets.

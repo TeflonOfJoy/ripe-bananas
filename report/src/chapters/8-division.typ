@@ -11,3 +11,6 @@ My primary role consisted in the implementation and maintenance of the component
 
 == Stefano Golzio
 
+My primary role consisted in the implementation and maintenance of the components for handling the static movies related data, which include:
+ - PostgreSQL
+ - SpringBoot

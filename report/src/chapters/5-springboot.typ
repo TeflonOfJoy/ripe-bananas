@@ -82,4 +82,4 @@ SpringBoot manages the properties in a file inside the resource package called `
 The first three voices are not directly in the file but stored in a `.env` file for privacy reasons and to avoid editing the file every time we deploy to Heroku.
 
 == Limitations
-SpringBoot, like other frameworks, offers many features, but it also sets a standard you must follow. If you need to go beyond that standard, you have to fight the framework to do the things you want or develop some workarounds, just like we did with the issue we've encountered, however if you want to make from scratch an application like this without using SpringBoot you end up writing an insane amount of code. At that point, it is much faster to work with SpringBoot, and after some time, you start to bear all the quirks and limitations it has.
+Our SpringBoot API is not capable to insert, delete or update the Database, we did not implemented these features because all of the data is static and it is highly unlikely that it would change, for example a movie can't change the name, duration or the year of release.
