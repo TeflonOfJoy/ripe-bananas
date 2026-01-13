@@ -23,6 +23,13 @@ exports.getMessages = async (req, res, next) => {
       .select('-__v')
       .lean();
 
+    if (!messages || messages.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Room not found'
+      });
+    }
+
     res.json({
       success: true,
       data: messages.reverse(), // Reverse to chronological order
