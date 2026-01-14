@@ -24,13 +24,18 @@ join movies_have_actors mha on mo.id = mha.movie_id
 join actors ac on mha.actor_id = ac.id
 where
 --lower(mo.name) like lower('%con air%') and
---ge.genre in ('Action', 'Drama') and
 --mo.date >= 1999 and
 --mo.date <= 2010 and
 --mo.rating >= 3 and
 --mo.rating <= 5 and
 --mo.minute >= 31 and
 --mo.minute <= 100 and
+/*mo.id in (
+	select distinct mhg2.movie_id
+  from movie_has_genres mhg2
+  join genres ge2 on mhg2.genre_id = ge2.genre_id
+  where ge2.genre in ('Action', 'Drama')
+) and */
 ac.id = 20664
 group by mo.id, po.link
 ;--order by rating DESC;

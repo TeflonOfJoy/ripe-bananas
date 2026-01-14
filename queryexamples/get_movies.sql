@@ -22,12 +22,17 @@ join movie_has_genres mhg on mo.id = mhg.movie_id
 join genres ge on mhg.genre_id = ge.genre_id
 where 
 lower(mo.name) like lower('%no country for old men%')
---ge.genre in ('Action', 'Drama') and
 --mo.date >= 1999 and
 --mo.date <= 2010 and
 --mo.rating >= 3 and
 --mo.rating <= 5 and
 --mo.minute >= 31 and
 --mo.minute <= 100 and
+/*mo.id in (
+	select distinct mhg2.movie_id
+  from movie_has_genres mhg2
+  join genres ge2 on mhg2.genre_id = ge2.genre_id
+  where ge2.genre in ('Action', 'Drama')
+)*/
 group by mo.id, po.link
 ;--order by rating DESC;
