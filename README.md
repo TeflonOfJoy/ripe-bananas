@@ -2,7 +2,7 @@
 
 ## Guidelines
 ### Indentation
-4 spaces, configure the IDE/TextEditor to use spaces (soft tabs) instead of Tabs
+2 spaces, configure the IDE/TextEditor to use spaces (soft tabs) instead of Tabs
 (hard tabs).
 One line of code should not exceed 80 characters, configure IDE/TextEditor 
 to wrap the lines in 80 chars
@@ -10,10 +10,10 @@ if a function signature exceed 80 chars indent like this:
 ```java
 @GetMapping("/get_movies_by_name")
 public ResponseEntity<Page<Movie>> getMovieByName(
-        @RequestParam(value = "name", defaultValue = "") String movie_name,
-        @RequestParam(value = "page_num", defaultValue = "0") int page_num,
-        @RequestParam(value = "page_sz", defaultValue = "25") int page_sz) {
-    // do stuff
+  @RequestParam(value = "name", defaultValue = "") String movie_name,
+  @RequestParam(value = "page_num", defaultValue = "0") int page_num,
+  @RequestParam(value = "page_sz", defaultValue = "25") int page_sz) {
+  // do stuff
 }
 ```
 
@@ -38,12 +38,12 @@ wrap in spaces any variable check or assignment for readability
 ```java
 int val = 50; //OK
 if(val == 50){
-    System.out.println(val);    
+  System.out.println(val);    
 }
 
 int val=50; //WRONG
 if(val==50){
-    System.out.println(val);
+  System.out.println(val);
 }
 ```
 
@@ -53,17 +53,17 @@ the end for better readability
 example
 ```java
 class Main {
-    public static int foo(){
-        return 1;
-    }
-    
-    public static void bar(){
-        System.out.println(foo());
-    }
-    
-    public static void main(String[] args){
-        bar();
-    }
+  public static int foo(){
+    return 1;
+  }
+
+  public static void bar(){
+    System.out.println(foo());
+  }
+
+  public static void main(String[] args){
+    bar();
+  }
 }
 ```
 
@@ -76,9 +76,9 @@ if you are forced to use a try/catch use it
 if(val != null) { /* do something */ } //OK
         
 try { //WRONG
-    val.toString();
+  val.toString();
 } catch (NullPointerException e) {
-    // dealing with exception    
+  // dealing with exception    
 }
 ```
 
@@ -91,7 +91,7 @@ app.get('/movies_info', get_movies_by_name)
 
 functions.js
 function get_movies_by_name(request, response) {
-    //stuff to do...
+  //stuff to do...
 }
 ```
 
