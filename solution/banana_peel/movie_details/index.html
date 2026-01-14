@@ -29,24 +29,6 @@
                         <li class="nav-item">
                             <a href="../" class="nav-link">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="javascript:void(0);" class="nav-link">Chat</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Genres
-                            </a>
-                            <ul id="genres-picker" class="dropdown-menu">
-                                <li><a href="#" class="dropdown-item">WOW</a></li>
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </li>
                     </ul>
                     <form class="d-flex p-1" role="search" onsubmit="event.preventDefault()">
 
@@ -73,13 +55,27 @@
         <div class="main-panel col-xl-8 col-md-10 col-mobile">
             <main id="page-content">
                 <!--Sections-->
-                <div id="loader" class="loader-wrapper w-100 m-auto d-none">
+                <div id="loader" class="loader-wrapper w-100 m-auto" style="margin-top: 300px !important;">
                     <div class="loader-factory m-auto mt-5"></div>
                     <p class="loader-text text-white text-light-emphasis fw-bold m-auto text-center mt-3">Loading</p>
                 </div>
             </main>
         </div>
         <div class="col-xl-2 col-md-1 mobile-hidden vh-100"></div>
+    </div>
+    <div class="container">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center"> 
+                    <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1" aria-label="Bootstrap"> 
+                        <svg class="bi" width="30" height="24" aria-hidden="true">
+                            <use xlink:href="#bootstrap"></use>
+                        </svg> 
+                    </a>
+                    <span class="mb-3 mb-md-0 text-body-secondary">
+                        © 2026 Kukaj, Golzio, Nibizi
+                    </span>
+            </div>
+        </footer>
     </div>
 </body>
 <script src="../libraries/jquery-3.7.1.min.js"></script>

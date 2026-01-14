@@ -133,35 +133,9 @@ function print_sections(){
             new bootstrap.Carousel(carousel_element);
         });
     }
-}
-
-//Search redirection
-$(document).keypress(function(e) {
-    if(e.which != 13) return
-    /*if($('#main-search-bar').is(':focus') && $('#main-search-bar').val().length > 0){
-        var search = get_search_values();
-        console.log("#" + search.type + "/" + search.term);
-        //redirect_search(search_term);
-    }*/
-});
-
-$('#main-search-button').on('click', () => {
-    //If #main-search-bar is focused and user presses ENTER, it triggers like a click
-    if($('#main-search-bar').val().length > 0){
-        var search = get_search_values();
-        var search_hash = "/" + search.type + "/" + search.term;
-        redirect_search(search_hash);
-    }
-    return;
-});
-
-function get_search_values(){
-    return {
-        term : $('#main-search-bar').val(),
-        type : $('#search-type').val()
-    };
-}
-
-function redirect_search(search_term) {
-    redirect_url("search/#" + search_term);
+    $('.movie-card,.movie-card-carousel').on('click', (element) => {
+        var id = element.currentTarget.attributes.id.value;
+        //console.log("movie_details/#/detail/" + id);
+        redirect_url("movie_details/#/detail/" + id);
+    });
 }

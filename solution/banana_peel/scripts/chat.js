@@ -1,33 +1,51 @@
 //Chat behaviour
-var db_sender_name = ""
-var db_sender_color = ""
+var db_sender_name = "";
+var db_sender_color = "";
 var socket = null;
-var banana_split_url = "http://localhost:3000";
+var banana_split_url = _api_base_address.substring(0, _api_base_address.length - 1);
+var default_topic = "General";
+var topic = "";
 
 $(window).on('load' ,() => {
     db_sender_name = getCookie("sender_name");
     db_sender_color = getCookie("sender_color");
-
-    console.log(db_sender_name, ',', db_sender_color);
 
     if(db_sender_name == ""){
         console.log("Cookie not found");
         $('#chat-input').addClass('d-none');
         $('#name-selector').removeClass('d-none');
     }else{
-        console.log("Cookie found");
         $('#name-selector').addClass('d-none');
         $('#chat-input').removeClass('d-none');
+        topic = get_topic_name_from_url();
         initSocket();
     }
+
+    $('#scaled-chat').css('height',"calc(100vh - " + $('.navbar').outerHeight(true) + "px)");
 });
+
+function get_topic_name_from_url() {
+    const hash = decodeURI(window.location.hash);
+    if(hash.length > 0){
+        if(hash.startsWith('#/topic/')) {
+            return hash.replace('#/topic/', '');
+        }
+    }else{
+        return "";
+    }
+}
 
 function initSocket() {
     socket = io(banana_split_url);
 
     socket.on('connect', () => {
-        console.log('Connected to chat server');
-        var current_room = $('#topic-label').text();
+        var current_room = "";
+        if(topic.length > 0){
+            current_room = topic;
+        }else{
+            current_room = default_topic;
+        }
+        $('#topic-label').text(current_room);
         
         socket.emit('join-room', {
             room: current_room,
@@ -53,7 +71,6 @@ function loadChatHistory(room) {
     axios.get(banana_split_url + '/api/chat/' + encodeURIComponent(room))
     .then(response => {
         if (response.data.success && response.data.data) {
-            console.log('Loaded chat history:', response.data.count, 'messages');
             response.data.data.forEach(msg => {
                 print_message(msg.message, msg.username, msg.colour || '#888888');
             });
@@ -146,44 +163,13 @@ async function checkNameAvailability(sender_name) {
  */
 function print_message(message_text, sender_name, sender_color){
     var message_html = `<div class="message w-100 p-2 d-flex">
-                        <span class="nickname fw-bold mb-0" style="color:${sender_color}">${sender_name}</span>
-                        <i class="divider me-1 ms-1 mb-0">:</i>
-                        <p class="message-content mb-0 text-break">${message_text}</p>
-                    </div>`;
+            <span class="nickname fw-bold mb-0" style="color:${sender_color}">${sender_name}</span>
+            <i class="divider me-1 ms-1 mb-0">:</i>
+            <p class="message-content mb-0 text-break">${message_text}</p>
+        </div>`;
     
     $('#chat-body').append(message_html);
     $('#chat-body').animate({
         scrollTop : $('#chat-body').get(0).scrollHeight
     }, 0);
-}
-
-
-//Utilities
-function setCookie(cname, cvalue) {
-  document.cookie = cname + "=" + cvalue + ";path=/";
-}
-
-function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(';');
-  for(let i = 0; i <ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
-function rand_color() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
 }

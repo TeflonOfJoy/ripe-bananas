@@ -20,7 +20,7 @@ class Movie{
   }
 
   get_movie_card() {
-    return `<div id="${this.id}" class="card movie-card p-0">
+    return `<div id="${this.id}" class="card movie-card p-0 user-select-none">
         <img class="w-100 h-auto rounded-top-1"
             src="${this.poster}">
         <div class="card-body text-white">
@@ -35,8 +35,8 @@ class Movie{
   }
 
   get_movie_carousel() {
-    return `<div id="${this.id}" class="carousel-item p-2 ${this.active}">
-        <div class="card m-auto w-100 movie-card-carousel" style="max-width: 586px;">
+    return `<div class="carousel-item p-2 ${this.active}">
+        <div id="${this.id}" class="card m-auto w-100 movie-card-carousel user-select-none" style="max-width: 586px;">
           <div class="row g-0">
             <div class="col-5">
               <img class="rounded-start w-100"
@@ -87,7 +87,7 @@ class Category{
   get_movie_card_category() {
     return `<section class="me-1 ms-1">
       <h3 class="mb-2">
-          <a href="#!" class="title text-white">
+          <a class="title text-white user-select-none link-underline-none">
               <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
           </a>
       </h3>
@@ -101,7 +101,7 @@ class Category{
     //"d-flex mb-5 mt-4 flex-wrap"
     return `<section class="me-1 ms-1">
       <h3 class="mb-2">
-          <a href="#!" class="title text-white">
+          <a class="title text-white user-select-none link-underline-none">
               <span class="text-warning font-weight-bold pr-3">|</span>${this.category_name}
           </a>
       </h3>
@@ -116,7 +116,7 @@ class Category{
   get_movie_carousel_category() {
     return `<section class="me-1 ms-1">
       <h3 class="mb-2">
-        <a href="#!" class="title text-white">
+        <a class="title text-white d-none link-underline-none">
           <span class="text-warning font-weight-bold pr-3">|</span>
           ${this.category_name}
           <i class="fas fa-chevron-right pl-2 fa-xs"></i>
@@ -163,7 +163,7 @@ class MovieDetail{
 
   add_actor(actor, role){
     var string_item = `<p class="text-light small m-1">
-          <a href="#" class="link-warning link-underline-opacity-0">${actor}</a>
+          <span class="text-warning">${actor}</span>
           •
           <span class="text-secondary">${role}</span>
       </p>`;
@@ -171,8 +171,8 @@ class MovieDetail{
   }
 
   add_crew(crew, role){
-    var string_item = `<p class="text-light small m-1">
-          <a href="#" class="link-warning link-underline-opacity-0">${crew}</a>
+    var string_item = `<p class="text-light small m-1 user-select-none">
+          <span class="text-warning">${crew}</span>
           •
           <span class="text-secondary">${role}</span>
       </p>`;
@@ -189,8 +189,8 @@ class MovieDetail{
     this.studios.push(string_item);
   }
 
-  add_languages(language){
-    var string_item = `<span class="badge bg-body-tertiary">${language}</span>`;
+  add_languages(language, type){
+    var string_item = `<span class="badge bg-body-tertiary m-1">${language} • ${type}</span>`;
     this.languages.push(string_item);
   }
 
@@ -208,8 +208,8 @@ class MovieDetail{
     this.countries.push(string_item);
   }
 
-  add_review(name, publisher, score, content, date, time){
-    var string_item = `<div class="container row border-2 border-warning rounded 1">
+  add_review(name, publisher, score, content, date){
+    var string_item = `<div class="container row border-2 border-info rounded 1">
           <p class="m-0">
               <span> ${name} </span>
               •
@@ -218,7 +218,7 @@ class MovieDetail{
           <p class="m-0 small text-secondary">
               <span class="text-warning fw-bold">${score}</span>
               •
-              <span> ${time} • ${date} </span>
+              <span>${date}</span>
           </p>
           <p class="">
               ${content}
@@ -267,17 +267,8 @@ class MovieDetail{
                     </p>
                 </div>
                 <div class="container p-2 m-2 bg-secondary-subtle rounded-1">
-                    <h4>
-                      Releases 
-                      <a class="btn btn-outline-secondary" href="#releases"
-                        data-bs-toggle="collapse" 
-                        role="button" 
-                        aria-expanded="false" 
-                        aria-controls="releases">
-                        <i class="bi bi-caret-down-fill"></i>
-                      </a>
-                    </h4>
-                    <div id="releases" class="collapse">
+                    <h4>Releases</h4>
+                    <div id="releases" class="scrollable-detail">
                       <p class="text-light small">
                         ${this.releases.join('')}
                       </p>
@@ -295,14 +286,18 @@ class MovieDetail{
                 </div>
                 <div class="container p-2 m-2 bg-secondary-subtle rounded-1">
                     <h4 class="">Cast</h4>
-                    <div class="container">
-                        ${this.actors.join('')}
+                    <div id="actors" class="scrollable-detail-longer">
+                      <div class="container">
+                          ${this.actors.join('')}
+                      </div>
                     </div>
                 </div>
                 <div class="container p-2 m-2 bg-secondary-subtle rounded-1">
                     <h4>Crew</h4>
-                    <div class="container">
-                      ${this.crew.join('')}
+                    <div id="crew" class="scrollable-detail-longer">
+                      <div class="container">
+                        ${this.crew.join('')}
+                      </div>
                     </div>
                 </div>
             </div>
@@ -311,10 +306,32 @@ class MovieDetail{
             <div class="col-11 col-md-12 m-auto m-md-0 mt-md-2">
                 <div class="container p-2 m-2 bg-secondary-subtle rounded-1">
                     <h5>Reviews</h5>
-                    <p id="empty-reviews" class="text-secondary p-3 text-center">No reviews yet</p>
-                    ${this.reviews.join('')}
+                    <p id="loader-reviews" class="text-secondary p-3 text-center">Loading reviews <span class="spinner-border spinner-border-sm"></span></p>
+                    <p id="empty-reviews" class="text-secondary p-3 text-center d-none">No reviews yet</p>
+                    <div id="reviews-container" class="scrollable-detail-longer">
+                      ${this.reviews.join('')}
+                    </div>
+                    <div id="pagination" class="pagination justify-content-center m-2 d-none">
+                      <li class="page-item"><a href="#" class="page-link">Previous</a></li>
+                      <li class="page-item"><a class="page-link" href="#">1</a></li>
+                      <li class="page-item active">
+                        <a class="page-link" href="#" aria-current="page">2</a>
+                      </li>
+                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="row p-1">
+          <div class="col-11 col-md-12 m-auto m-md-0 mt-md-2">
+            <div class="container p-2 m-2 rounded-1 align-items-center">
+              <a href="../chat/#/topic/${encodeURI(this.name)}" 
+                  class="btn btn-outline-warning d-flex m-auto w-50 justify-content-center">
+                OPEN LIVE CHAT
+              </a>
+            </div>
+          </div>
         </div>
     </section>`;
   }

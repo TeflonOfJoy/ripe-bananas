@@ -112,6 +112,11 @@ function search_actor(search_term){
 function print_search(preset, category){
     $('#loader').addClass("d-none");
     $('#page-content').append(category.toString(preset.type));
+    $('.movie-card,.movie-card-carousel').on('click', (element) => {
+        var id = element.currentTarget.attributes.id.value;
+        //console.log("movie_details/#/detail/" + id);
+        redirect_url("movie_details/#/detail/" + id);
+    });
 }
 
 function perform_search(preset, search_term){

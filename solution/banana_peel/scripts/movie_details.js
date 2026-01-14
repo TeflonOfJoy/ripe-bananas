@@ -2,10 +2,6 @@ var _movie_details_call = {
     movie_id: 0,
     review: {
         endpoint: "api/reviews/movie/",
-        params: {
-            page: 0,
-            order: "date"
-        }
     },
     movie_detail: {
         endpoint: "api/movies/get_movie_details/",
@@ -63,14 +59,22 @@ function fetch_details(){
                 movie_detail.add_studio(studio);
             });
             movie.languages.forEach(language => {
-                movie_detail.add_languages(language.language);
+                movie_detail.add_languages(language.language, language.type.replace(' language', ''));
             });
             movie.countries.forEach(country => {
                 movie_detail.add_country(country);
             });
-            movie.releases.forEach(release => {
+            movie.releases.sort(function(a, b){return new Date(a.date) - new Date(b.date)}).reverse().forEach(release => {
                 var date = fixdate(release.date);
-                var date_string = date.getDay() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+                var date_o = {
+                    day: new String(date.getDate()),
+                    month: new String(date.getMonth() + 1),
+                    year: new String(date.getFullYear())
+                }
+                var date_string = (date_o.day.length > 1 ? date_o.day : "0" + date_o.day) 
+                    + "/" + 
+                    (date_o.month.length > 1 ? date_o.month : "0" + date_o.month ) 
+                    + "/" + date_o.year;
                 movie_detail.add_release(fixnull(release.country), 
                                         date_string, 
                                         fixrating(new String(release.rating)),
@@ -87,11 +91,55 @@ function print_details(movie_detail){
     $('#loader').addClass('d-none');
     $('section').remove();
     $('#page-content').append(movie_detail.toString());
-    load_reviews(movie_detail.id);
+    load_reviews(movie_detail.id, movie_detail);
 }
 
-function load_reviews(id){
-    console.log("must load reviews")
+function load_reviews(id, movie_detail){
+    axios.get(_api_base_address + 
+            _movie_details_call.review.endpoint + id, {
+                params:{
+                    limit: 6,
+                    date: "date",
+                    order: "desc"
+                }
+            })
+    .then(response => {
+        var reviews = response.data.data.reviews;
+        var pagination = response.data.data.pagination;
+        $('#loader-reviews').addClass('d-none');
+        if(pagination.total_count == 0){
+            $('#empty-reviews').removeClass('d-none');
+            return;
+        }else{
+            reviews.forEach(review => {
+                var date = fixdate(review.review_date);
+                var date_o = {
+                    day: new String(date.getDate()),
+                    month: new String(date.getMonth() + 1),
+                    year: new String(date.getFullYear())
+                }
+                var date_string = (date_o.day.length > 1 ? date_o.day : "0" + date_o.day) 
+                    + "/" + 
+                    (date_o.month.length > 1 ? date_o.month : "0" + date_o.month ) 
+                    + "/" + date_o.year;
+                //add_review(name, publisher, score, content, date, time)
+                movie_detail.add_review(review.critic_name,
+                                            review.publisher_name,
+                                            fixrating(new String(review.review_score)),
+                                            review.review_content,
+                                            date_string);
+            });
+            $('#reviews-container').append(movie_detail.reviews.join(''));
+            $('#pagination').removeClass('d-none');
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    });
+}
+
+function empty_reviews(){
+    $('#reviews-container').empty();
 }
 
 function get_movie_id_from_url() {
