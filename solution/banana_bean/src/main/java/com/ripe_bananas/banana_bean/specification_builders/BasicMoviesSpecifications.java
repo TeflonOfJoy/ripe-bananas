@@ -145,11 +145,11 @@ public class BasicMoviesSpecifications {
     };
   }
 
-  public static Specification<BasicMovie> hasGenre(List<String> genres){
+  public static Specification<BasicMovie> hasGenre(String genre){
     return (root, query, criteriaBuilder) -> {
-      if(genres != null && !genres.isEmpty()){
+      if(genre != null && !genre.isEmpty()){
         Join<BasicMovie, Genre> genre_join = root.join("genres", JoinType.INNER);
-        return genre_join.get("genre_name").in(genres);
+        return criteriaBuilder.equal(genre_join.get("genre_name"), genre);
       }
 
       return criteriaBuilder.conjunction();

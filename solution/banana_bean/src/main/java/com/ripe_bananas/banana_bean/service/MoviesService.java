@@ -53,8 +53,11 @@ public class MoviesService {
                                                 int page_size) {
     Specification<BasicMovie> specs = BasicMoviesSpecifications.nameLikeTo(name);
 
-    specs = specs
-      .and(BasicMoviesSpecifications.hasGenre(genres));
+    if (genres != null && genres.isEmpty() == false) {
+      for (String genre : genres) {
+        specs = specs.and(BasicMoviesSpecifications.hasGenre(genre));
+      }
+    }
     specs = specs
       .and(BasicMoviesSpecifications.ratingGreaterThanOrEqual(min_rating));
     specs = specs
@@ -110,8 +113,12 @@ public class MoviesService {
 
     Specification<BasicMovie> specs = BasicMoviesSpecifications.hasActor(actor_id);
 
-    specs = specs
-      .and(BasicMoviesSpecifications.hasGenre(genres));
+    if (genres != null && genres.isEmpty() == false) {
+      for (String genre : genres) {
+        specs = specs.and(BasicMoviesSpecifications.hasGenre(genre));
+      }
+    }
+
     specs = specs
       .and(BasicMoviesSpecifications.nameLikeTo(name));
     specs = specs
@@ -159,7 +166,7 @@ public class MoviesService {
 
     if (genres != null && genres.isEmpty() == false) {
       for (String genre : genres) {
-        specs = specs.and(BasicMoviesSpecifications.hasGenre(genres));
+        specs = specs.and(BasicMoviesSpecifications.hasGenre(genre));
       }
     }
 
